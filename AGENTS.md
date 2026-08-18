@@ -33,10 +33,11 @@ backend serves the built `frontend/dist` files.
 `flask-server/.env` is **ignored by Git**, so your local config does not affect
 Render and vice versa.
 
-- **Local:** use the official `https://api.clashroyale.com/v1` and a token
-  whitelisted for your current public IP.
-- **Render / public:** use `https://proxy.royaleapi.dev/v1` and a token
-  whitelisted for the static proxy IP `45.79.218.79`.
+- **Default (local and Render):** `https://proxy.royaleapi.dev/v1` with a
+  token whitelisted for the static proxy IP `45.79.218.79`.
+- **If you have a static public IP and want to test without the proxy:** switch
+  `flask-server/.env` to `https://api.clashroyale.com/v1` and use a token
+  whitelisted for your current IP.
 
 `render.yaml` sets the proxy and `CLAN_TAG` by default. You only need to add
 `CLASH_ROYALE_TOKEN` and `SETTINGS_PASSWORD` in the Render dashboard.
@@ -47,7 +48,7 @@ Settings are stored in `flask-server/.env`:
 
 ```env
 CLASH_ROYALE_TOKEN=your_bearer_token
-CLASH_ROYALE_BASE_URL=https://api.clashroyale.com/v1
+CLASH_ROYALE_BASE_URL=https://proxy.royaleapi.dev/v1
 CLAN_TAG=%23RY8LY
 SETTINGS_PASSWORD=a_strong_password
 ```
@@ -87,8 +88,9 @@ service on a free Render web instance.
    `https://clash-clan-tracker.onrender.com`).
 5. Share that link.
 
-Because `.env` is not committed, you can keep testing locally with your own
-IP/token while the GitHub/Render version uses the proxy token.
+Because `.env` is not committed, you can override it locally to test with the
+official API if you have a static IP. The GitHub/Render version will use the
+proxy.
 
 ## Verification
 
