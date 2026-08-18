@@ -204,6 +204,14 @@
     transform: translateX(2px);
 }
 
+.clickableItem {
+    cursor: pointer;
+}
+
+.clickableItem:hover {
+    background: var(--primary-subtle);
+}
+
 .ownClan {
     background: var(--primary-subtle);
     border-color: var(--primary);

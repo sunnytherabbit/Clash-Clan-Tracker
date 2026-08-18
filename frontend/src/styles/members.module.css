@@ -92,6 +92,16 @@
     background: var(--surface-2);
 }
 
+.clickableRow {
+    cursor: pointer;
+    transition: background 0.1s ease, transform 0.1s ease;
+}
+
+.clickableRow:hover {
+    background: var(--primary-subtle);
+    transform: translateX(2px);
+}
+
 .table .num {
     text-align: right;
     font-variant-numeric: tabular-nums;

@@ -1,5 +1,5 @@
 import { useRiverRace } from "../hooks/useRiverRace";
-import { PlayerLink } from "../components/PlayerLink";
+import { usePlayerNavigate } from "../hooks/usePlayerNavigate";
 import { BadgeImage } from "../components/GameImage";
 import { formatNumber } from "../lib/format";
 import styles from "../styles/overview.module.css";
@@ -28,9 +28,7 @@ export default function Overview() {
 
     const members = Array.isArray(clanMembers) ? clanMembers.slice() : [];
     const memberCount =
-        clanInfo.memberCount ??
-        clanInfo.memberList?.length ??
-        members.length;
+        clanInfo.memberCount ?? clanInfo.memberList?.length ?? members.length;
 
     const stats = [
         { label: "Members", value: memberCount },
@@ -48,7 +46,11 @@ export default function Overview() {
             <div className={styles.hero}>
                 <div className={styles.heroInfo}>
                     <div className={styles.heroTop}>
-                        <BadgeImage id={clanInfo.badgeId} size="5rem" className={styles.clanBadge} />
+                        <BadgeImage
+                            id={clanInfo.badgeId}
+                            size="5rem"
+                            className={styles.clanBadge}
+                        />
                         <div className={styles.heroTitles}>
                             <span className={styles.state}>{clanInfo.type || "Clan"}</span>
                             <h2 className={styles.clanName}>{clanInfo.name}</h2>
@@ -84,18 +86,7 @@ export default function Overview() {
                         ) : (
                             <ul className={styles.list}>
                                 {topTrophies.map((m, i) => (
-                                    <li key={m.tag} className={styles.listItem}>
-                                        <span className={styles.rank}>#{i + 1}</span>
-                                        <div className={styles.listInfo}>
-                                            <span className={styles.listName}>
-                                                <PlayerLink tag={m.tag} name={m.name} />
-                                            </span>
-                                            <span className={styles.listTag}>{m.tag}</span>
-                                        </div>
-                                        <span className={styles.listScore}>
-                                            {formatNumber(m.trophies)}
-                                        </span>
-                                    </li>
+                                    <TopMemberItem key={m.tag} member={m} rank={i + 1} score={m.trophies} />
                                 ))}
                             </ul>
                         )}
@@ -110,18 +101,7 @@ export default function Overview() {
                         ) : (
                             <ul className={styles.list}>
                                 {topDonations.map((m, i) => (
-                                    <li key={m.tag} className={styles.listItem}>
-                                        <span className={styles.rank}>#{i + 1}</span>
-                                        <div className={styles.listInfo}>
-                                            <span className={styles.listName}>
-                                                <PlayerLink tag={m.tag} name={m.name} />
-                                            </span>
-                                            <span className={styles.listTag}>{m.tag}</span>
-                                        </div>
-                                        <span className={styles.listScore}>
-                                            {formatNumber(m.donations)}
-                                        </span>
-                                    </li>
+                                    <TopMemberItem key={m.tag} member={m} rank={i + 1} score={m.donations} />
                                 ))}
                             </ul>
                         )}
@@ -129,5 +109,20 @@ export default function Overview() {
                 </div>
             </div>
         </div>
+    );
+}
+
+function TopMemberItem({ member, rank, score }) {
+    const goToPlayer = usePlayerNavigate(member.tag);
+
+    return (
+        <li onClick={goToPlayer} className={`${styles.listItem} ${styles.clickableItem}`}>
+            <span className={styles.rank}>#{rank}</span>
+            <div className={styles.listInfo}>
+                <span className={styles.listName}>{member.name}</span>
+                <span className={styles.listTag}>{member.tag}</span>
+            </div>
+            <span className={styles.listScore}>{formatNumber(score)}</span>
+        </li>
     );
 }

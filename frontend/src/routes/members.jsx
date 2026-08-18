@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRiverRace } from "../hooks/useRiverRace";
-import { PlayerLink } from "../components/PlayerLink";
+import { usePlayerNavigate } from "../hooks/usePlayerNavigate";
 import { formatNumber, formatDate } from "../lib/format";
 import styles from "../styles/members.module.css";
 
@@ -70,19 +70,7 @@ export default function Members() {
                     </thead>
                     <tbody>
                         {members.map((m) => (
-                            <tr key={m.tag}>
-                                <td>{m.clanRank}</td>
-                                <td className={styles.name}>
-                                    <PlayerLink tag={m.tag} name={m.name} />
-                                </td>
-                                <td className={styles.tag}>{m.tag}</td>
-                                <td>{m.role}</td>
-                                <td className={styles.num}>{formatNumber(m.expLevel)}</td>
-                                <td className={styles.num}>{formatNumber(m.trophies)}</td>
-                                <td className={styles.num}>{formatNumber(m.donations)}</td>
-                                <td className={styles.num}>{formatNumber(m.donationsReceived)}</td>
-                                <td className={styles.num}>{formatDate(m.lastSeen)}</td>
-                            </tr>
+                            <MemberRow key={m.tag} member={m} />
                         ))}
                     </tbody>
                 </table>
@@ -91,5 +79,23 @@ export default function Members() {
                 )}
             </div>
         </div>
+    );
+}
+
+function MemberRow({ member }) {
+    const goToPlayer = usePlayerNavigate(member.tag);
+
+    return (
+        <tr onClick={goToPlayer} className={styles.clickableRow}>
+            <td>{member.clanRank}</td>
+            <td className={styles.name}>{member.name}</td>
+            <td className={styles.tag}>{member.tag}</td>
+            <td>{member.role}</td>
+            <td className={styles.num}>{formatNumber(member.expLevel)}</td>
+            <td className={styles.num}>{formatNumber(member.trophies)}</td>
+            <td className={styles.num}>{formatNumber(member.donations)}</td>
+            <td className={styles.num}>{formatNumber(member.donationsReceived)}</td>
+            <td className={styles.num}>{formatDate(member.lastSeen)}</td>
+        </tr>
     );
 }
