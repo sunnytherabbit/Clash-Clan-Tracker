@@ -1,5 +1,7 @@
 import os
 import time
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from flask import jsonify, request, send_from_directory
 import requests
 import config
@@ -13,21 +15,25 @@ class _Cache:
     def __init__(self, ttl=CACHE_TTL):
         self._store = {}
         self._ttl = ttl
+        self._lock = threading.Lock()
 
     def get(self, key):
-        entry = self._store.get(key)
-        if entry and time.time() < entry["expires"]:
-            return entry["data"]
-        return None
+        with self._lock:
+            entry = self._store.get(key)
+            if entry and time.time() < entry["expires"]:
+                return entry["data"]
+            return None
 
     def set(self, key, data, ttl=None):
-        self._store[key] = {
-            "data": data,
-            "expires": time.time() + (ttl if ttl is not None else self._ttl),
-        }
+        with self._lock:
+            self._store[key] = {
+                "data": data,
+                "expires": time.time() + (ttl if ttl is not None else self._ttl),
+            }
 
     def clear(self):
-        self._store.clear()
+        with self._lock:
+            self._store.clear()
 
 
 _cache = _Cache()
@@ -189,6 +195,46 @@ def fetch_clan_members():
     )
 
 
+def _extract_member_elo(player):
+    pol = player.get("currentPathOfLegendSeasonResult") or {}
+    arena = pol.get("arena") or player.get("arena") or {}
+    return {
+        "elo": pol.get("trophies"),
+        "leagueNumber": pol.get("leagueNumber"),
+        "leagueName": arena.get("name"),
+        "trophies": player.get("trophies"),
+    }
+
+
+def fetch_member_elos():
+    cached = _cache.get("clan_members:elo")
+    if cached is not None:
+        return cached
+
+    members = fetch_clan_members()
+    tags = [m["tag"] for m in members.get("items", []) if m.get("tag")]
+
+    result = {}
+
+    def fetch_one(tag):
+        try:
+            player = fetch_player(tag)
+            result[tag] = _extract_member_elo(player)
+        except Exception:
+            result[tag] = {
+                "elo": None,
+                "leagueNumber": None,
+                "leagueName": None,
+                "trophies": None,
+            }
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        executor.map(fetch_one, tags)
+
+    _cache.set("clan_members:elo", result, ttl=300)
+    return result
+
+
 def fetch_player(tag):
     encoded = config._encode_tag(tag)
     return _cr_get(
@@ -294,6 +340,21 @@ def clan():
 def clan_members():
     try:
         data = fetch_clan_members()
+        return jsonify(data), 200
+    except requests.exceptions.HTTPError as e:
+        status = e.response.status_code
+        message = e.response.text or str(e)
+        return jsonify({"error": "Clash Royale API error", "message": message}), status
+    except RuntimeError as e:
+        return jsonify({"error": "Configuration error", "message": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": "Server error", "message": str(e)}), 500
+
+
+@config.app.route("/api/clan/members/elo", methods=["GET"])
+def clan_members_elo():
+    try:
+        data = fetch_member_elos()
         return jsonify(data), 200
     except requests.exceptions.HTTPError as e:
         status = e.response.status_code

@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRiverRace } from "../hooks/useRiverRace";
+import { useMemberElos } from "../hooks/useMemberElos";
 import { usePlayerNavigate } from "../hooks/usePlayerNavigate";
+import { LeagueBadge } from "../components/LeagueBadge";
 import { formatNumber, formatTimeAgo } from "../lib/format";
 import styles from "../styles/members.module.css";
 
@@ -10,10 +12,11 @@ const columns = [
     { key: "tag", label: "Tag", text: true, defaultDir: "asc" },
     { key: "role", label: "Role", text: true, defaultDir: "asc" },
     { key: "expLevel", label: "Exp", numeric: true, defaultDir: "desc" },
-    { key: "trophies", label: "Trophies", numeric: true, defaultDir: "desc" },
+    { key: "elo", label: "ELO", numeric: true, defaultDir: "desc" },
     { key: "donations", label: "Donations", numeric: true, defaultDir: "desc" },
     { key: "donationsReceived", label: "Received", numeric: true, defaultDir: "desc" },
     { key: "lastSeen", label: "Last Seen", date: true, defaultDir: "desc" },
+    { key: "leagueName", label: "League", text: true, defaultDir: "asc" },
 ];
 
 function compare(a, b, col) {
@@ -29,18 +32,32 @@ function compare(a, b, col) {
 
 export default function Members() {
     const { clanMembers, loading, error } = useRiverRace();
+    const { elos } = useMemberElos(clanMembers);
     const [sortConfig, setSortConfig] = useState({
         key: "clanRank",
         dir: "asc",
     });
     const [filter, setFilter] = useState("");
 
+    const enrichedMembers = useMemo(() => {
+        return (clanMembers || []).map((m) => {
+            const e = elos[m.tag] || {};
+            return {
+                ...m,
+                elo: e.elo != null ? e.elo : m.trophies,
+                leagueNumber: e.leagueNumber,
+                leagueName: e.leagueName || "",
+                hasElo: e.elo != null,
+            };
+        });
+    }, [clanMembers, elos]);
+
     if (loading && !clanMembers) return <p className={styles.empty}>Loading members...</p>;
     if (error) return <div className={styles.error}>{error}</div>;
 
     const col = columns.find((c) => c.key === sortConfig.key) || columns[0];
 
-    const members = (clanMembers || [])
+    const members = enrichedMembers
         .slice()
         .sort((a, b) => {
             const c = compare(a, b, col);
@@ -74,6 +91,7 @@ export default function Members() {
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
                     />
+
                 </div>
             </div>
 
@@ -93,10 +111,7 @@ export default function Members() {
                                 >
                                     <span className={styles.headerContent}>
                                         {c.label}
-                                        <span
-                                            className={styles.arrow}
-                                            aria-hidden="true"
-                                        >
+                                        <span className={styles.arrow} aria-hidden="true">
                                             {sortConfig.key === c.key
                                                 ? sortConfig.dir === "asc"
                                                     ? "▲"
@@ -133,12 +148,35 @@ function MemberRow({ member }) {
             <td className={styles.tag}>{member.tag}</td>
             <td>{member.role}</td>
             <td className={styles.num}>{formatNumber(member.expLevel)}</td>
-            <td className={styles.num}>{formatNumber(member.trophies)}</td>
+            <td className={styles.num}>
+                <span className={member.hasElo ? styles.elo : styles.trophies}>
+                    {formatNumber(member.elo)}
+                </span>
+                {!member.hasElo && (
+                    <span className={styles.fallbackTrophies} title="Trophy Road">
+                        TR
+                    </span>
+                )}
+            </td>
             <td className={styles.num}>{formatNumber(member.donations)}</td>
             <td className={styles.num}>{formatNumber(member.donationsReceived)}</td>
             <td className={`${styles.num} ${styles.lastSeen}`}>
                 <span className={styles.ago}>{lastSeen.ago}</span>
                 <span className={styles.fullDate}>{lastSeen.full}</span>
+            </td>
+            <td className={styles.leagueCell}>
+                {member.leagueNumber ? (
+                    <span className={styles.league}>
+                        <LeagueBadge
+                            leagueNumber={member.leagueNumber}
+                            name={member.leagueName}
+                            size="1.75rem"
+                        />
+                        <span className={styles.leagueName}>{member.leagueName}</span>
+                    </span>
+                ) : (
+                    "—"
+                )}
             </td>
         </tr>
     );
