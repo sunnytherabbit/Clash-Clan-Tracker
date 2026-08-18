@@ -1,0 +1,213 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    border-radius: var(--radius);
+    padding: 2rem;
+    color: #fff;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, rgba(255,255,255,0.2) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.heroInfo {
+    position: relative;
+    z-index: 1;
+}
+
+.state {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+}
+
+.clanName {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.tag {
+    margin: 0.25rem 0 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.meta span {
+    padding: 0.35rem 0.75rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+}
+
+.statCard {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.15s ease;
+}
+
+.statCard:hover {
+    transform: translateY(-2px);
+}
+
+.statValue {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1;
+}
+
+.statLabel {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+    .columns {
+        grid-template-columns: 1fr;
+    }
+}
+
+.columnTitle {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.listItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: var(--surface-2);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: all 0.15s ease;
+}
+
+.listItem:hover {
+    border-color: var(--border-color);
+    transform: translateX(2px);
+}
+
+.ownClan {
+    background: var(--primary-subtle);
+    border-color: var(--primary);
+}
+
+.rank {
+    width: 2rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.listInfo {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.listName {
+    font-weight: 700;
+    color: var(--text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.listTag {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.listScore {
+    font-weight: 800;
+    color: var(--primary);
+    font-variant-numeric: tabular-nums;
+}
+
+.empty {
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 1rem;
+}
+
+.error {
+    background: var(--error-bg);
+    color: var(--error);
+    padding: 1rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    border: 1px solid var(--error);
+}

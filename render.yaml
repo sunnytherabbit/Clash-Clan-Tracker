@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: clash-clan-tracker
+    runtime: python
+    plan: free
+    buildCommand: |
+      pip install -r requirements.txt
+      cd frontend && npm install && npm run build
+    startCommand: cd flask-server && gunicorn --bind 0.0.0.0:$PORT wsgi:application
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: CLASH_ROYALE_TOKEN
+        sync: false
+      - key: CLAN_TAG
+        value: "%23RY8LY"
