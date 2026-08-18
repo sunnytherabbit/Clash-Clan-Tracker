@@ -182,9 +182,12 @@ function MemberRow({ member }) {
                     {formatNumber(member.displayElo)}
                 </span>
                 {!member.hasElo && (
-                    <span className={styles.fallbackTrophies} title="Trophy Road">
-                        TR
-                    </span>
+                    <img
+                        src="/trophy.webp"
+                        alt="Trophy Road"
+                        className={styles.trophyIcon}
+                        title="Trophy Road"
+                    />
                 )}
             </td>
             <td className={styles.num}>{formatNumber(member.donations)}</td>

@@ -165,12 +165,12 @@
     color: #eab308;
 }
 
-.fallbackTrophies {
-    font-size: 0.65rem;
-    color: var(--text-secondary);
-    margin-left: 0.35rem;
-    font-weight: 700;
-    vertical-align: super;
+.trophyIcon {
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+    object-fit: contain;
 }
 
 .leagueCell {
