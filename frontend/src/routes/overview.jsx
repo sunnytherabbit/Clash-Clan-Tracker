@@ -62,7 +62,7 @@ export default function Overview() {
                     )}
                     <div className={styles.meta}>
                         <span>Location: {clanInfo.location?.name || "—"}</span>
-                        <span>Members: {memberCount}</span>
+                        <span>Members: {memberCount} / 50</span>
                         <span>Required Trophies: {formatNumber(clanInfo.requiredTrophies)}</span>
                     </div>
                 </div>
@@ -72,7 +72,7 @@ export default function Overview() {
                 {stats.map((s) => (
                     <div key={s.label} className={styles.statCard}>
                         <span className={styles.statValue}>
-                            {formatNumber(s.value)}
+                            {s.label === "Members" ? `${formatNumber(s.value)} / 50` : formatNumber(s.value)}
                             {s.icon && (
                                 <img src={s.icon} alt={s.label} className={styles.statIcon} />
                             )}
