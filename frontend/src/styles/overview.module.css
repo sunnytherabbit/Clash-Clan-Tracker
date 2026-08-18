@@ -53,6 +53,12 @@
     opacity: 0.9;
 }
 
+.description {
+    margin: 0.75rem 0 0;
+    max-width: 600px;
+    opacity: 0.95;
+}
+
 .meta {
     display: flex;
     flex-wrap: wrap;
@@ -130,6 +136,28 @@
     border-radius: var(--radius);
     padding: 1rem;
     box-shadow: var(--shadow);
+}
+
+.scrollCard {
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.scrollCard::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollCard::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollCard::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+.scrollCard::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
 }
 
 .list {

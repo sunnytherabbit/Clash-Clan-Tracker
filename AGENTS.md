@@ -6,34 +6,48 @@ player profiles.
 
 ## Running locally
 
-1. Start the backend:
+You can test the production build locally without waiting for Render. The
+backend serves the built `frontend/dist` files.
+
+1. Build the frontend:
    ```bash
-   cd flask-server
+   cd frontend
+   npm install
+   npm run build
+   ```
+
+2. Start the backend:
+   ```bash
+   cd ../flask-server
    python3 -m venv venv
    ./venv/bin/pip install -r requirements.txt
    ./venv/bin/python app.py
    ```
-   The backend runs on `http://127.0.0.1:5000`.
+   The full app runs on `http://127.0.0.1:5000`.
 
-2. Start the frontend:
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
-   The frontend runs on `http://localhost:5173`.
+3. After any frontend change, run `npm run build` again and refresh your
+   browser. The backend will serve the new `dist` files automatically.
+
+## Local vs Render configuration
+
+`flask-server/.env` is **ignored by Git**, so your local config does not affect
+Render and vice versa.
+
+- **Local:** use the official `https://api.clashroyale.com/v1` and a token
+  whitelisted for your current public IP.
+- **Render / public:** use `https://proxy.royaleapi.dev/v1` and a token
+  whitelisted for the static proxy IP `45.79.218.79`.
+
+`render.yaml` sets the proxy and `CLAN_TAG` by default. You only need to add
+`CLASH_ROYALE_TOKEN` and `SETTINGS_PASSWORD` in the Render dashboard.
 
 ## Configuration
-
-The app uses the **RoyaleAPI proxy** by default (`https://proxy.royaleapi.dev/v1`).
-To use it, create a Clash Royale API key with the proxy IP whitelisted:
-`45.79.218.79`.
 
 Settings are stored in `flask-server/.env`:
 
 ```env
 CLASH_ROYALE_TOKEN=your_bearer_token
-CLASH_ROYALE_BASE_URL=https://proxy.royaleapi.dev/v1
+CLASH_ROYALE_BASE_URL=https://api.clashroyale.com/v1
 CLAN_TAG=%23RY8LY
 SETTINGS_PASSWORD=a_strong_password
 ```
@@ -49,7 +63,8 @@ through the UI.
 
 ## Features
 
-- **Overview** — clan details, stats, top members by trophies and donations.
+- **Overview** — clan details, stats, top members by trophies and donations
+  (scrollable lists to view all members).
 - **Members** — full searchable, sortable clan member list. Click a member to
   open their profile.
 - **Player** — player profile and battle log. Accessed by clicking any player
@@ -66,13 +81,14 @@ service on a free Render web instance.
 2. In Render, click **New +** → **Blueprint**, connect the repo, and use the
    `render.yaml`.
 3. In the service environment variables, set:
-   - `CLASH_ROYALE_TOKEN` — your bearer token (whitelist `45.79.218.79` in the
-     Clash Royale dev portal for the proxy).
+   - `CLASH_ROYALE_TOKEN` — your proxy token (whitelist `45.79.218.79`).
    - `SETTINGS_PASSWORD` — a strong password for the Settings tab.
 4. Render will build and deploy a single public URL (e.g.
    `https://clash-clan-tracker.onrender.com`).
-5. Share that link — it serves the React app and the `/api/*` routes from the
-   same host.
+5. Share that link.
+
+Because `.env` is not committed, you can keep testing locally with your own
+IP/token while the GitHub/Render version uses the proxy token.
 
 ## Verification
 

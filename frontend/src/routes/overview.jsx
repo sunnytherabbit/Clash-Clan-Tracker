@@ -25,17 +25,22 @@ export default function Overview() {
     if (error) return <div className={styles.error}>{error}</div>;
     if (!clanInfo) return <Empty />;
 
-    const members = (clanMembers || []).slice();
+    const members = Array.isArray(clanMembers) ? clanMembers.slice() : [];
+    const memberCount =
+        clanInfo.memberCount ??
+        clanInfo.memberList?.length ??
+        members.length;
+
     const stats = [
-        { label: "Members", value: clanInfo.memberCount },
+        { label: "Members", value: memberCount },
         { label: "Clan Score", value: clanInfo.clanScore },
         { label: "Clan War Trophies", value: clanInfo.clanWarTrophies },
         { label: "Donations / Week", value: clanInfo.donationsPerWeek },
         { label: "Required Trophies", value: clanInfo.requiredTrophies },
     ];
 
-    const topTrophies = members.slice().sort(sortByTrophies).slice(0, 5);
-    const topDonations = members.slice().sort(sortByDonations).slice(0, 5);
+    const topTrophies = members.slice().sort(sortByTrophies);
+    const topDonations = members.slice().sort(sortByDonations);
 
     return (
         <div className={styles.container}>
@@ -49,7 +54,7 @@ export default function Overview() {
                     )}
                     <div className={styles.meta}>
                         <span>Location: {clanInfo.location?.name || "—"}</span>
-                        <span>Members: {clanInfo.memberCount}</span>
+                        <span>Members: {memberCount}</span>
                         <span>Required Trophies: {formatNumber(clanInfo.requiredTrophies)}</span>
                     </div>
                 </div>
@@ -67,7 +72,7 @@ export default function Overview() {
             <div className={styles.columns}>
                 <div className={styles.column}>
                     <h3 className={styles.columnTitle}>Top by Trophies</h3>
-                    <div className={styles.card}>
+                    <div className={`${styles.card} ${styles.scrollCard}`}>
                         {topTrophies.length === 0 ? (
                             <p className={styles.empty}>No members yet.</p>
                         ) : (
@@ -93,7 +98,7 @@ export default function Overview() {
 
                 <div className={styles.column}>
                     <h3 className={styles.columnTitle}>Top by Donations</h3>
-                    <div className={styles.card}>
+                    <div className={`${styles.card} ${styles.scrollCard}`}>
                         {topDonations.length === 0 ? (
                             <p className={styles.empty}>No members yet.</p>
                         ) : (
