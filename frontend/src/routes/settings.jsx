@@ -48,98 +48,82 @@ export default function Settings() {
         <div className={styles.container}>
             <h2 className={styles.title}>Settings</h2>
 
-            <div className={styles.grid}>
-                <form className={styles.card} onSubmit={handleSubmit}>
-                    <h3 className={styles.cardTitle}>API Key</h3>
-                    <p className={styles.description}>
-                        Enter your Clash Royale API bearer token. Leave blank to keep the
-                        existing token.
-                    </p>
-                    <label className={styles.label} htmlFor="token">
-                        Bearer token
-                    </label>
-                    <textarea
-                        id="token"
-                        className={styles.textarea}
-                        rows={4}
-                        value={token}
-                        onChange={(e) => setToken(e.target.value)}
-                        placeholder="Paste your Bearer token here"
-                    />
+            <form className={styles.card} onSubmit={handleSubmit}>
+                <h3 className={styles.cardTitle}>API Key</h3>
+                <p className={styles.description}>
+                    Enter your Clash Royale API bearer token. Leave blank to keep the
+                    existing token.
+                </p>
+                <label className={styles.label} htmlFor="token">
+                    Bearer token
+                </label>
+                <textarea
+                    id="token"
+                    className={styles.textarea}
+                    rows={4}
+                    value={token}
+                    onChange={(e) => setToken(e.target.value)}
+                    placeholder="Paste your Bearer token here"
+                />
 
-                    <h3 className={styles.cardTitle}>Clan</h3>
-                    <p className={styles.description}>
-                        Clan tag used for the river race lookup. Do not include the leading #.
-                    </p>
+                <h3 className={styles.cardTitle}>Clan</h3>
+                <p className={styles.description}>
+                    Clan tag used for the river race lookup. Do not include the leading #.
+                </p>
+                <input
+                    id="clanTag"
+                    type="text"
+                    className={styles.input}
+                    value={clanTag}
+                    onChange={(e) => setClanTag(e.target.value)}
+                    placeholder="RY8LY"
+                />
+
+                <h3 className={styles.cardTitle}>API Endpoint</h3>
+                <p className={styles.description}>
+                    Use the RoyaleAPI proxy if your server has a dynamic IP. For the
+                    proxy, create a Clash Royale key whitelisting
+                    <strong> 45.79.218.79</strong>.
+                </p>
+                <label className={styles.checkbox}>
                     <input
-                        id="clanTag"
-                        type="text"
-                        className={styles.input}
-                        value={clanTag}
-                        onChange={(e) => setClanTag(e.target.value)}
-                        placeholder="RY8LY"
+                        type="checkbox"
+                        checked={useProxy}
+                        onChange={toggleProxy}
                     />
+                    Use RoyaleAPI proxy
+                </label>
+                <input
+                    type="text"
+                    className={styles.input}
+                    value={baseUrl}
+                    onChange={(e) => {
+                        setUseProxy(e.target.value === PROXY_BASE);
+                        setBaseUrl(e.target.value);
+                    }}
+                    placeholder="https://api.clashroyale.com/v1"
+                />
 
-                    <h3 className={styles.cardTitle}>API Endpoint</h3>
-                    <p className={styles.description}>
-                        Use the RoyaleAPI proxy if your server has a dynamic IP. For the
-                        proxy, create a Clash Royale key whitelisting
-                        <strong> 45.79.218.79</strong>.
-                    </p>
-                    <label className={styles.checkbox}>
-                        <input
-                            type="checkbox"
-                            checked={useProxy}
-                            onChange={toggleProxy}
-                        />
-                        Use RoyaleAPI proxy
-                    </label>
-                    <input
-                        type="text"
-                        className={styles.input}
-                        value={baseUrl}
-                        onChange={(e) => {
-                            setUseProxy(e.target.value === PROXY_BASE);
-                            setBaseUrl(e.target.value);
-                        }}
-                        placeholder="https://api.clashroyale.com/v1"
-                    />
-
-                    <div className={styles.actions}>
-                        <button
-                            type="submit"
-                            className={styles.save}
-                            disabled={saving}
-                        >
-                            {saving ? "Saving..." : "Save & Refresh"}
-                        </button>
-                    </div>
-
-                    {status && (
-                        <div
-                            className={
-                                status.type === "success" ? styles.success : styles.error
-                            }
-                        >
-                            {status.message}
-                        </div>
-                    )}
-                </form>
-
-                <div className={styles.card}>
-                    <h3 className={styles.cardTitle}>About</h3>
-                    <p className={styles.description}>
-                        This dashboard fetches the current river race for the configured
-                        clan. The token is stored in the backend <code>flask-server/.env</code>{" "}
-                        file and is not tracked by Git.
-                    </p>
-                    <p className={styles.description}>
-                        If you see an access-denied error, the API key does not allow access
-                        from the request IP address. You can use the RoyaleAPI proxy and
-                        whitelist the proxy IP (45.79.218.79) instead.
-                    </p>
+                <div className={styles.actions}>
+                    <button
+                        type="submit"
+                        className={styles.save}
+                        disabled={saving}
+                    >
+                        {saving ? "Saving..." : "Save & Refresh"}
+                    </button>
                 </div>
-            </div>
+
+                {status && (
+                    <div
+                        className={
+                            status.type === "success" ? styles.success : styles.error
+                        }
+                    >
+                        {status.message}
+                    </div>
+                )}
+            </form>
         </div>
     );
 }
