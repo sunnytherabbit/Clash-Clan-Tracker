@@ -12,10 +12,19 @@
     box-shadow: var(--shadow);
 }
 
-.heroInfo {
+.heroTop {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.heroTitles {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.1rem;
+    flex: 1;
+    min-width: 0;
 }
 
 .playerName {
@@ -31,6 +40,36 @@
     margin: 0;
 }
 
+.arenaName {
+    margin: 0.2rem 0 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    opacity: 0.95;
+}
+
+.trophyBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    margin-left: auto;
+}
+
+.trophyValue {
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.trophyLabel {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
 .meta {
     display: flex;
     flex-wrap: wrap;
@@ -40,10 +79,22 @@
     font-weight: 600;
 }
 
-.meta span {
+.meta > span {
     background: rgba(255, 255, 255, 0.15);
     padding: 0.35rem 0.75rem;
     border-radius: 999px;
+}
+
+.clanMeta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.clanBadge {
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.1rem;
 }
 
 .tabs {
@@ -72,9 +123,22 @@
     border-bottom-color: var(--primary);
 }
 
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.sectionTitle {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 1rem;
 }
 
@@ -95,7 +159,7 @@
 }
 
 .statLabel {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -108,6 +172,116 @@
     padding: 1rem;
     box-shadow: var(--shadow);
     overflow-x: auto;
+}
+
+.scrollCard {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.scrollCard::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollCard::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollCard::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+.favCard {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    width: fit-content;
+}
+
+.favName {
+    margin: 0;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.favLevel {
+    margin: 0.2rem 0 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.seasons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.seasonCard {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.seasonTitle {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.seasonStats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.badgeList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.badgeItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--surface-2);
+    border-radius: 10px;
+    color: var(--text-color);
+}
+
+.badgeInfo {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.badgeName {
+    font-weight: 700;
+}
+
+.badgeLevel {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
 }
 
 .list {
@@ -149,11 +323,12 @@
 .battleItem {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
-    padding: 0.85rem;
+    gap: 0.75rem;
+    padding: 1rem;
     background: var(--surface-2);
     border-radius: 10px;
     color: var(--text-color);
+    overflow-x: auto;
 }
 
 .battleHeader {
@@ -179,17 +354,38 @@
     color: var(--text-secondary);
 }
 
-.battleScore {
+.battleTeams {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    font-weight: 700;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.battleTeam {
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
-    margin-top: 0.25rem;
+    align-items: center;
+    min-width: 0;
+    flex: 1;
+}
+
+.battlePlayer {
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.battleVersus {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .crowns {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     font-weight: 800;
     color: var(--primary);
 }

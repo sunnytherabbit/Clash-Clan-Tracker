@@ -1,5 +1,6 @@
 import { useRiverRace } from "../hooks/useRiverRace";
 import { PlayerLink } from "../components/PlayerLink";
+import { BadgeImage } from "../components/GameImage";
 import { formatNumber } from "../lib/format";
 import styles from "../styles/overview.module.css";
 
@@ -46,9 +47,14 @@ export default function Overview() {
         <div className={styles.container}>
             <div className={styles.hero}>
                 <div className={styles.heroInfo}>
-                    <span className={styles.state}>{clanInfo.type || "Clan"}</span>
-                    <h2 className={styles.clanName}>{clanInfo.name}</h2>
-                    <p className={styles.tag}>{clanInfo.tag}</p>
+                    <div className={styles.heroTop}>
+                        <BadgeImage id={clanInfo.badgeId} size="5rem" className={styles.clanBadge} />
+                        <div className={styles.heroTitles}>
+                            <span className={styles.state}>{clanInfo.type || "Clan"}</span>
+                            <h2 className={styles.clanName}>{clanInfo.name}</h2>
+                            <p className={styles.tag}>{clanInfo.tag}</p>
+                        </div>
+                    </div>
                     {clanInfo.description && (
                         <p className={styles.description}>{clanInfo.description}</p>
                     )}

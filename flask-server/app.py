@@ -5,6 +5,8 @@ import requests
 import config
 
 CACHE_TTL = 60
+ASSET_DATA_BASE = "https://royaleapi.github.io/cr-api-data/json"
+ASSET_IMG_BASE = "https://royaleapi.github.io/cr-api-assets"
 
 
 class _Cache:
@@ -112,6 +114,58 @@ def clear_cache():
     _cache.clear()
 
 
+def _fetch_asset_json(name):
+    url = f"{ASSET_DATA_BASE}/{name}.json"
+    response = requests.get(url, timeout=15)
+    response.raise_for_status()
+    return response.json()
+
+
+def _build_badge_map():
+    cached = _cache.get("assets:badges")
+    if cached is not None:
+        return cached
+
+    data = _fetch_asset_json("alliance_badges")
+    mapping = {}
+    for badge in data:
+        if "id" in badge and "name" in badge:
+            mapping[str(badge["id"])] = f"{ASSET_IMG_BASE}/badges/{badge['name']}.png"
+
+    _cache.set("assets:badges", mapping, ttl=86400)
+    return mapping
+
+
+def _build_arena_map():
+    cached = _cache.get("assets:arenas")
+    if cached is not None:
+        return cached
+
+    data = _fetch_asset_json("arenas")
+    mapping = {}
+    for arena in data:
+        if "id" in arena and "arena" in arena:
+            mapping[str(arena["id"])] = f"{ASSET_IMG_BASE}/arenas/arena{arena['arena']}.png"
+
+    _cache.set("assets:arenas", mapping, ttl=86400)
+    return mapping
+
+
+def _build_cards_map():
+    cached = _cache.get("assets:cards")
+    if cached is not None:
+        return cached
+
+    data = _fetch_asset_json("cards")
+    mapping = {}
+    for card in data:
+        if "id" in card:
+            mapping[str(card["id"])] = card.get("iconUrls", {}).get("medium", "")
+
+    _cache.set("assets:cards", mapping, ttl=86400)
+    return mapping
+
+
 def fetch_riverrace():
     """Fetch the current river race, with a short in-memory cache."""
     return _cr_get(
@@ -156,6 +210,30 @@ def fetch_player_battles(tag):
 @config.app.route("/api/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok"}), 200
+
+
+@config.app.route("/api/assets/badges", methods=["GET"])
+def assets_badges():
+    try:
+        return jsonify(_build_badge_map()), 200
+    except Exception as e:
+        return jsonify({"error": "Asset error", "message": str(e)}), 502
+
+
+@config.app.route("/api/assets/arenas", methods=["GET"])
+def assets_arenas():
+    try:
+        return jsonify(_build_arena_map()), 200
+    except Exception as e:
+        return jsonify({"error": "Asset error", "message": str(e)}), 502
+
+
+@config.app.route("/api/assets/cards", methods=["GET"])
+def assets_cards():
+    try:
+        return jsonify(_build_cards_map()), 200
+    except Exception as e:
+        return jsonify({"error": "Asset error", "message": str(e)}), 502
 
 
 @config.app.route("/api/config", methods=["POST", "PUT"])

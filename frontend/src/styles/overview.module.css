@@ -22,9 +22,28 @@
     pointer-events: none;
 }
 
+.heroTop {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.heroTitles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
 .heroInfo {
     position: relative;
     z-index: 1;
+}
+
+.clanBadge {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 0.35rem;
 }
 
 .state {

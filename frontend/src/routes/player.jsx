@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useRiverRace } from "../hooks/useRiverRace";
+import { ArenaImage, BadgeImage, CardImage, PlayerBadgeImage } from "../components/GameImage";
+import Deck from "../components/Deck";
+import ProgressBar from "../components/ProgressBar";
 import { formatNumber, formatDate } from "../lib/format";
 import styles from "../styles/player.module.css";
 
@@ -8,6 +11,54 @@ const tabs = [
     { key: "profile", label: "Profile" },
     { key: "battles", label: "Battle Log" },
 ];
+
+const allStats = (player) => [
+    { label: "Exp Level", value: player.expLevel },
+    { label: "Trophies", value: player.trophies },
+    { label: "Best Trophies", value: player.bestTrophies },
+    { label: "Wins", value: player.wins },
+    { label: "Losses", value: player.losses },
+    { label: "Battles", value: player.battleCount },
+    { label: "3-Crown Wins", value: player.threeCrownWins },
+    { label: "Total Donations", value: player.totalDonations },
+    { label: "Challenge Cards", value: player.challengeCardsWon },
+    { label: "Tournament Cards", value: player.tournamentCardsWon },
+    { label: "Star Points", value: player.starPoints },
+    { label: "War Day Wins", value: player.warDayWins },
+    { label: "Clan Cards", value: player.clanCardsCollected },
+    { label: "Exp Points", value: player.expPoints },
+];
+
+function Section({ title, children }) {
+    return (
+        <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>{title}</h3>
+            {children}
+        </div>
+    );
+}
+
+function SeasonCard({ title, season }) {
+    if (!season) return null;
+    return (
+        <div className={styles.seasonCard}>
+            <h4 className={styles.seasonTitle}>{title}</h4>
+            <div className={styles.seasonStats}>
+                <span>Trophies: {formatNumber(season.trophies)}</span>
+                {season.bestTrophies !== undefined && (
+                    <span>Best: {formatNumber(season.bestTrophies)}</span>
+                )}
+                {season.rank !== undefined && season.rank !== null && (
+                    <span>Rank: #{formatNumber(season.rank)}</span>
+                )}
+                {season.leagueNumber !== undefined && (
+                    <span>League: {season.leagueNumber}</span>
+                )}
+                {season.arena && <span>{season.arena.name}</span>}
+            </div>
+        </div>
+    );
+}
 
 export default function Player() {
     const rawTag = useParams().tag || "";
@@ -57,33 +108,45 @@ export default function Player() {
     if (error) return <div className={styles.error}>{error}</div>;
     if (!player) return <p className={styles.empty}>No player data.</p>;
 
-    const stats = [
-        { label: "Trophies", value: player.trophies },
-        { label: "Best Trophies", value: player.bestTrophies },
-        { label: "Wins", value: player.wins },
-        { label: "Losses", value: player.losses },
-        { label: "Battles", value: player.battleCount },
-        { label: "3-Crown Wins", value: player.threeCrownWins },
-        { label: "Total Donations", value: player.totalDonations },
-        { label: "Challenge Cards", value: player.challengeCardsWon },
-        { label: "Tournament Cards", value: player.tournamentCardsWon },
-        { label: "Star Points", value: player.starPoints },
-        { label: "Exp Level", value: player.expLevel },
-    ];
+    const stats = allStats(player);
 
     return (
         <div className={styles.container}>
             <div className={styles.hero}>
                 <div className={styles.heroInfo}>
-                    <h2 className={styles.playerName}>{player.name}</h2>
-                    <p className={styles.tag}>{player.tag}</p>
+                    <div className={styles.heroTop}>
+                        <ArenaImage
+                            id={player.arena?.id}
+                            name={player.arena?.name}
+                            size="5.5rem"
+                        />
+                        <div className={styles.heroTitles}>
+                            <h2 className={styles.playerName}>{player.name}</h2>
+                            <p className={styles.tag}>{player.tag}</p>
+                            {player.arena && (
+                                <p className={styles.arenaName}>{player.arena.name}</p>
+                            )}
+                        </div>
+                        <div className={styles.trophyBox}>
+                            <span className={styles.trophyValue}>
+                                {formatNumber(player.trophies)}
+                            </span>
+                            <span className={styles.trophyLabel}>Trophies</span>
+                        </div>
+                    </div>
+
                     <div className={styles.meta}>
-                        <span>Arena: {player.arena?.name || "—"}</span>
                         {player.clan && (
-                            <span>
-                                Clan: {player.clan.name} ({player.role || "Member"})
+                            <span className={styles.clanMeta}>
+                                <BadgeImage
+                                    id={player.clan.badgeId}
+                                    size="1.5rem"
+                                    className={styles.clanBadge}
+                                />
+                                {player.clan.name} · {player.role || "Member"}
                             </span>
                         )}
+                        <span>Level {player.expLevel}</span>
                     </div>
                 </div>
             </div>
@@ -105,14 +168,119 @@ export default function Player() {
             </div>
 
             {activeTab === "profile" && (
-                <div className={styles.grid}>
-                    {stats.map((s) => (
-                        <div key={s.label} className={styles.statCard}>
-                            <span className={styles.statValue}>{formatNumber(s.value)}</span>
-                            <span className={styles.statLabel}>{s.label}</span>
+                <>
+                    <Section title="Stats">
+                        <div className={styles.grid}>
+                            {stats.map((s) => (
+                                <div key={s.label} className={styles.statCard}>
+                                    <span className={styles.statValue}>
+                                        {formatNumber(s.value)}
+                                    </span>
+                                    <span className={styles.statLabel}>{s.label}</span>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
+                    </Section>
+
+                    {player.currentDeck && player.currentDeck.length > 0 && (
+                        <Section title="Current Deck">
+                            <div className={styles.card}>
+                                <Deck cards={player.currentDeck} size="4rem" />
+                            </div>
+                        </Section>
+                    )}
+
+                    {player.currentFavouriteCard && (
+                        <Section title="Favourite Card">
+                            <div className={styles.favCard}>
+                                <CardImage
+                                    card={player.currentFavouriteCard}
+                                    size="5rem"
+                                />
+                                <div>
+                                    <p className={styles.favName}>
+                                        {player.currentFavouriteCard.name}
+                                    </p>
+                                    <p className={styles.favLevel}>
+                                        Level {player.currentFavouriteCard.level}
+                                    </p>
+                                </div>
+                            </div>
+                        </Section>
+                    )}
+
+                    {(player.currentPathOfLegendSeasonResult ||
+                        player.lastPathOfLegendSeasonResult ||
+                        player.bestPathOfLegendSeasonResult) && (
+                        <Section title="Path of Legend">
+                            <div className={styles.seasons}>
+                                <SeasonCard
+                                    title="Current"
+                                    season={player.currentPathOfLegendSeasonResult}
+                                />
+                                <SeasonCard
+                                    title="Last"
+                                    season={player.lastPathOfLegendSeasonResult}
+                                />
+                                <SeasonCard
+                                    title="Best"
+                                    season={player.bestPathOfLegendSeasonResult}
+                                />
+                            </div>
+                        </Section>
+                    )}
+
+                    {player.badges && player.badges.length > 0 && (
+                        <Section title="Badges">
+                            <div className={`${styles.card} ${styles.scrollCard}`}>
+                                <ul className={styles.badgeList}>
+                                    {player.badges.map((badge, i) => (
+                                        <li key={i} className={styles.badgeItem}>
+                                            <PlayerBadgeImage badge={badge} size="3.5rem" />
+                                            <div className={styles.badgeInfo}>
+                                                <span className={styles.badgeName}>{badge.name}</span>
+                                                <span className={styles.badgeLevel}>
+                                                    Lv {badge.level}/{badge.maxLevel}
+                                                </span>
+                                                <ProgressBar
+                                                    value={badge.progress}
+                                                    max={badge.target}
+                                                    label={`${formatNumber(
+                                                        badge.progress
+                                                    )} / ${formatNumber(badge.target)}`}
+                                                />
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </Section>
+                    )}
+
+                    {player.achievements && player.achievements.length > 0 && (
+                        <Section title="Achievements">
+                            <div className={`${styles.card} ${styles.scrollCard}`}>
+                                <ul className={styles.badgeList}>
+                                    {player.achievements.map((a, i) => (
+                                        <li key={i} className={styles.badgeItem}>
+                                            <span className={styles.badgeName}>{a.name}</span>
+                                            <span className={styles.badgeLevel}>
+                                                {a.stars} ★
+                                            </span>
+                                            <ProgressBar
+                                                value={a.value}
+                                                max={a.target}
+                                                label={`${formatNumber(a.value)} / ${formatNumber(
+                                                    a.target
+                                                )}`}
+                                            />
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </Section>
+                    )}
+                </>
             )}
 
             {activeTab === "battles" && (
@@ -139,13 +307,29 @@ export default function Player() {
                                             <span className={styles.battleMode}>
                                                 {battle.gameMode?.name || "—"}
                                             </span>
+                                            {battle.arena && (
+                                                <span>{battle.arena.name}</span>
+                                            )}
                                         </div>
-                                        <div className={styles.battleScore}>
-                                            <span>{myTeam.name || player.name}</span>
-                                            <span className={styles.crowns}>
-                                                {myTeam.crowns ?? 0} - {opponent.crowns ?? 0}
-                                            </span>
-                                            <span>{opponent.name || "Opponent"}</span>
+                                        <div className={styles.battleTeams}>
+                                            <div className={styles.battleTeam}>
+                                                <span className={styles.battlePlayer}>
+                                                    {myTeam.name || player.name}
+                                                </span>
+                                                <Deck cards={myTeam.cards} size="2.5rem" />
+                                            </div>
+                                            <div className={styles.battleVersus}>
+                                                <span className={styles.crowns}>
+                                                    {myTeam.crowns ?? 0} -{" "}
+                                                    {opponent.crowns ?? 0}
+                                                </span>
+                                            </div>
+                                            <div className={styles.battleTeam}>
+                                                <span className={styles.battlePlayer}>
+                                                    {opponent.name || "Opponent"}
+                                                </span>
+                                                <Deck cards={opponent.cards} size="2.5rem" />
+                                            </div>
                                         </div>
                                     </li>
                                 );
