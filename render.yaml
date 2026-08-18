@@ -16,3 +16,5 @@ services:
         value: https://proxy.royaleapi.dev/v1
       - key: CLAN_TAG
         value: "%23RY8LY"
+      - key: SETTINGS_PASSWORD
+        sync: false

@@ -24,30 +24,28 @@ Python Flask backend and Vite + React frontend that fetches the Clash Royale
 
 ## Configuration
 
-The API key, clan tag and API base URL can be changed from the **Settings** tab
-in the UI or by editing `flask-server/.env`:
+The app uses the **RoyaleAPI proxy** by default (`https://proxy.royaleapi.dev/v1`).
+To use it, create a Clash Royale API key with the proxy IP whitelisted:
+`45.79.218.79`.
+
+Settings are stored in `flask-server/.env`:
 
 ```env
 CLASH_ROYALE_TOKEN=your_bearer_token
-CLASH_ROYALE_BASE_URL=https://api.clashroyale.com/v1
+CLASH_ROYALE_BASE_URL=https://proxy.royaleapi.dev/v1
 CLAN_TAG=%23RY8LY
+SETTINGS_PASSWORD=a_strong_password
 ```
 
-The default `flask-server/.env` is already populated and is ignored by Git.
+The default `flask-server/.env` is already populated and is ignored by Git. The
+local default password is `dev` — **change it for production**.
 
-### Using the RoyaleAPI proxy
+### Settings page security
 
-If you are hosting on a service with a dynamic IP (e.g. Render free tier), you
-can use the RoyaleAPI public proxy:
-
-1. Create a new Clash Royale API key and whitelist the proxy IP:
-   `45.79.218.79`
-2. In the **Settings** tab, tick **Use RoyaleAPI proxy** or set the base URL to
-   `https://proxy.royaleapi.dev/v1`.
-3. Save & refresh.
-
-Your token is now tied to the static proxy IP, not your server’s IP, so it works
-from any host.
+The **Settings** tab in the UI now requires `SETTINGS_PASSWORD` to make any
+change. If the password is not set on the server, the configuration cannot be
+updated through the UI. This prevents visitors from changing your API key, clan
+or endpoint.
 
 ## Deploying online (Render — free)
 
@@ -58,9 +56,10 @@ service on a free Render web instance.
 1. Push this project to a GitHub / GitLab repo.
 2. In Render, click **New +** → **Blueprint**, connect the repo, and use the
    `render.yaml`.
-3. In the service environment variables, set `CLASH_ROYALE_TOKEN` to your
-   bearer token and `CLASH_ROYALE_BASE_URL` to either
-   `https://api.clashroyale.com/v1` or `https://proxy.royaleapi.dev/v1`.
+3. In the service environment variables, set:
+   - `CLASH_ROYALE_TOKEN` — your bearer token (whitelist `45.79.218.79` in the
+     Clash Royale dev portal for the proxy).
+   - `SETTINGS_PASSWORD` — a strong password for the Settings tab.
 4. Render will build and deploy a single public URL (e.g.
    `https://clash-clan-tracker.onrender.com`).
 5. Share that link — it serves the React app and the `/api/*` routes from the
@@ -70,7 +69,7 @@ service on a free Render web instance.
 
 - Backend health: `curl http://127.0.0.1:5000/api/health`
 - Backend river race: `curl http://127.0.0.1:5000/api/riverrace`
-- Update config: `curl -X POST -H "Content-Type: application/json" -d '{"token":"...","clan_tag":"#RY8LY","base_url":"https://proxy.royaleapi.dev/v1"}' http://127.0.0.1:5000/api/config`
+- Update config: `curl -X POST -H "Content-Type: application/json" -d '{"password":"dev","token":"...","clan_tag":"#RY8LY","base_url":"https://proxy.royaleapi.dev/v1"}' http://127.0.0.1:5000/api/config`
 - Frontend lint: `cd frontend && npm run lint`
 - Frontend build: `cd frontend && npm run build`
 - Production preview: `cd frontend && npm run preview`

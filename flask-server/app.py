@@ -59,12 +59,14 @@ def health():
 @config.app.route("/api/config", methods=["POST", "PUT"])
 def update_config():
     body = request.get_json(silent=True) or {}
+    password = body.get("password")
     token = body.get("token")
     clan_tag = body.get("clan_tag")
     base_url = body.get("base_url")
 
     try:
         config.set_config(
+            password=password,
             token=token if token != "" else None,
             clan_tag=clan_tag if clan_tag != "" else None,
             base_url=base_url if base_url != "" else None,

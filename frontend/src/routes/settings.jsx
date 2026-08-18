@@ -8,10 +8,11 @@ const PROXY_BASE = "https://proxy.royaleapi.dev/v1";
 
 export default function Settings() {
     const { refresh } = useRiverRace();
+    const [password, setPassword] = useState("");
     const [token, setToken] = useState("");
     const [clanTag, setClanTag] = useState("");
-    const [baseUrl, setBaseUrl] = useState(OFFICIAL_BASE);
-    const [useProxy, setUseProxy] = useState(false);
+    const [baseUrl, setBaseUrl] = useState(PROXY_BASE);
+    const [useProxy, setUseProxy] = useState(true);
     const [status, setStatus] = useState(null);
     const [saving, setSaving] = useState(false);
 
@@ -23,12 +24,18 @@ export default function Settings() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!password.trim()) {
+            setStatus({ type: "error", message: "Enter the settings password." });
+            return;
+        }
+
         setSaving(true);
         setStatus(null);
         try {
             await api_fetch("/api/config", {
                 method: "POST",
                 body: JSON.stringify({
+                    password: password.trim(),
                     token: token || undefined,
                     clan_tag: clanTag ? `#${clanTag.replace(/^#/, "")}` : undefined,
                     base_url: baseUrl,
@@ -49,6 +56,25 @@ export default function Settings() {
             <h2 className={styles.title}>Settings</h2>
 
             <form className={styles.card} onSubmit={handleSubmit}>
+                <p className={styles.description}>
+                    Changing these values requires the settings password configured on the
+                    server. If no password is set, updates must be made through environment
+                    variables.
+                </p>
+
+                <h3 className={styles.cardTitle}>Settings Password</h3>
+                <label className={styles.label} htmlFor="settingsPassword">
+                    Password
+                </label>
+                <input
+                    id="settingsPassword"
+                    type="password"
+                    className={styles.input}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter the server settings password"
+                />
+
                 <h3 className={styles.cardTitle}>API Key</h3>
                 <p className={styles.description}>
                     Enter your Clash Royale API bearer token. Leave blank to keep the
@@ -81,9 +107,10 @@ export default function Settings() {
 
                 <h3 className={styles.cardTitle}>API Endpoint</h3>
                 <p className={styles.description}>
-                    Use the RoyaleAPI proxy if your server has a dynamic IP. For the
-                    proxy, create a Clash Royale key whitelisting
-                    <strong> 45.79.218.79</strong>.
+                    The default is the RoyaleAPI proxy, which uses the static IP
+                    <strong> 45.79.218.79</strong>. For the proxy, create a Clash Royale
+                    key whitelisting that IP. You can switch back to the official API if
+                    your host has a static IP.
                 </p>
                 <label className={styles.checkbox}>
                     <input

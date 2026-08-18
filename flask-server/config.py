@@ -11,9 +11,10 @@ CORS(app, supports_credentials=True)
 
 CLASH_ROYALE_TOKEN = os.environ.get("CLASH_ROYALE_TOKEN", "")
 CLASH_ROYALE_BASE_URL = os.environ.get(
-    "CLASH_ROYALE_BASE_URL", "https://api.clashroyale.com/v1"
+    "CLASH_ROYALE_BASE_URL", "https://proxy.royaleapi.dev/v1"
 )
 CLAN_TAG = os.environ.get("CLAN_TAG", "%23RY8LY")
+SETTINGS_PASSWORD = os.environ.get("SETTINGS_PASSWORD", "")
 
 
 def _encode_tag(tag):
@@ -29,9 +30,18 @@ def _strip_trailing_slash(url):
     return url.rstrip("/")
 
 
-def set_config(token=None, clan_tag=None, base_url=None):
+def set_config(password, token=None, clan_tag=None, base_url=None):
     """Update the in-memory config and persist changes to .env."""
     global CLASH_ROYALE_TOKEN, CLAN_TAG, CLASH_ROYALE_BASE_URL
+
+    if not SETTINGS_PASSWORD:
+        raise RuntimeError(
+            "SETTINGS_PASSWORD is not configured. Set it in the environment before "
+            "changing configuration through the UI."
+        )
+
+    if not password or password != SETTINGS_PASSWORD:
+        raise RuntimeError("Invalid settings password.")
 
     if token is not None:
         CLASH_ROYALE_TOKEN = token
