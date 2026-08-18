@@ -3,6 +3,7 @@ import re
 import time
 import threading
 from concurrent.futures import ThreadPoolExecutor
+from urllib.parse import quote
 from flask import jsonify, request, send_from_directory
 import requests
 import config
@@ -10,7 +11,6 @@ import config
 CACHE_TTL = 60
 ASSET_DATA_BASE = "https://royaleapi.github.io/cr-api-data/json"
 ASSET_IMG_BASE = "https://royaleapi.github.io/cr-api-assets"
-FANDOM_API_URL = "https://clashroyale.fandom.com/api.php"
 
 
 class _Cache:
@@ -179,25 +179,46 @@ def _build_league_map():
     if cached is not None:
         return cached
 
-    params = {
-        "action": "query",
-        "list": "allimages",
-        "aiprefix": "League",
-        "ailimit": 50,
-        "format": "json",
+    base_paths = [
+        os.path.join(os.path.dirname(__file__), "..", "frontend", "public", "leagues"),
+        os.path.join(_dist_dir(), "leagues"),
+    ]
+
+    name_to_num = {
+        "Master I": "1",
+        "Master II": "2",
+        "Master III": "3",
+        "Champion": "4",
+        "Grand Champion": "5",
+        "Royal Champion": "6",
+        "Ultimate Champion": "7",
     }
-    headers = {"User-Agent": "Mozilla/5.0 ClashClanTracker/1.0"}
-    response = requests.get(FANDOM_API_URL, params=params, headers=headers, timeout=15)
-    response.raise_for_status()
-    data = response.json()
 
     mapping = {}
-    pattern = re.compile(r"^League(\d+)\.png$", re.IGNORECASE)
-    for img in data.get("query", {}).get("allimages", []):
-        name = img.get("name", "")
-        match = pattern.match(name)
-        if match:
-            mapping[match.group(1)] = img.get("url", "")
+    seen = set()
+    numbered_pattern = re.compile(r"^League(\d+)\.(?:webp|png|jpg|jpeg)$", re.IGNORECASE)
+
+    for base in base_paths:
+        if not os.path.isdir(base):
+            continue
+        for filename in os.listdir(base):
+            if not os.path.isfile(os.path.join(base, filename)):
+                continue
+            if filename in seen:
+                continue
+            seen.add(filename)
+
+            number = None
+            number_match = numbered_pattern.match(filename)
+            if number_match:
+                number = number_match.group(1)
+            else:
+                stem = os.path.splitext(filename)[0]
+                number = name_to_num.get(stem)
+
+            if number:
+                safe_name = quote(filename)
+                mapping[number] = f"/leagues/{safe_name}"
 
     _cache.set("assets:leagues", mapping, ttl=86400)
     return mapping
