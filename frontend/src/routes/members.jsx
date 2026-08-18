@@ -178,24 +178,26 @@ function MemberRow({ member }) {
                 )}
             </td>
             <td className={styles.num}>
-                <span className={member.hasElo ? styles.elo : styles.trophies}>
-                    {formatNumber(member.displayElo)}
+                <span className={styles.score}>
+                    <span className={member.hasElo ? styles.elo : styles.trophies}>
+                        {formatNumber(member.displayElo)}
+                    </span>
+                    {member.hasElo ? (
+                        <img
+                            src="/medal.webp"
+                            alt="ELO"
+                            className={styles.medalIcon}
+                            title="Path of Legend ELO"
+                        />
+                    ) : (
+                        <img
+                            src="/trophy.webp"
+                            alt="Trophy Road"
+                            className={styles.trophyIcon}
+                            title="Trophy Road"
+                        />
+                    )}
                 </span>
-                {member.hasElo ? (
-                    <img
-                        src="/medal.webp"
-                        alt="ELO"
-                        className={styles.medalIcon}
-                        title="Path of Legend ELO"
-                    />
-                ) : (
-                    <img
-                        src="/trophy.webp"
-                        alt="Trophy Road"
-                        className={styles.trophyIcon}
-                        title="Trophy Road"
-                    />
-                )}
             </td>
             <td className={styles.num}>{formatNumber(member.donations)}</td>
             <td className={styles.num}>{formatNumber(member.donationsReceived)}</td>
