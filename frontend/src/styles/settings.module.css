@@ -58,12 +58,28 @@
     color: var(--primary);
 }
 
-.label {
+.label,
+.checkbox {
     font-size: 0.85rem;
     font-weight: 700;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.03em;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    text-transform: none;
+    color: var(--text-color);
+}
+
+.checkbox input {
+    width: 1.15rem;
+    height: 1.15rem;
+    accent-color: var(--primary);
 }
 
 .input,

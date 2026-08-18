@@ -3,12 +3,23 @@ import { useRiverRace } from "../hooks/useRiverRace";
 import { api_fetch } from "../lib/api";
 import styles from "../styles/settings.module.css";
 
+const OFFICIAL_BASE = "https://api.clashroyale.com/v1";
+const PROXY_BASE = "https://proxy.royaleapi.dev/v1";
+
 export default function Settings() {
     const { refresh } = useRiverRace();
     const [token, setToken] = useState("");
     const [clanTag, setClanTag] = useState("");
+    const [baseUrl, setBaseUrl] = useState(OFFICIAL_BASE);
+    const [useProxy, setUseProxy] = useState(false);
     const [status, setStatus] = useState(null);
     const [saving, setSaving] = useState(false);
+
+    const toggleProxy = (e) => {
+        const checked = e.target.checked;
+        setUseProxy(checked);
+        setBaseUrl(checked ? PROXY_BASE : OFFICIAL_BASE);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,6 +31,7 @@ export default function Settings() {
                 body: JSON.stringify({
                     token: token || undefined,
                     clan_tag: clanTag ? `#${clanTag.replace(/^#/, "")}` : undefined,
+                    base_url: baseUrl,
                 }),
             });
             setStatus({ type: "success", message: "Saved. Refreshing data..." });
@@ -59,9 +71,6 @@ export default function Settings() {
                     <p className={styles.description}>
                         Clan tag used for the river race lookup. Do not include the leading #.
                     </p>
-                    <label className={styles.label} htmlFor="clanTag">
-                        Clan tag
-                    </label>
                     <input
                         id="clanTag"
                         type="text"
@@ -69,6 +78,31 @@ export default function Settings() {
                         value={clanTag}
                         onChange={(e) => setClanTag(e.target.value)}
                         placeholder="RY8LY"
+                    />
+
+                    <h3 className={styles.cardTitle}>API Endpoint</h3>
+                    <p className={styles.description}>
+                        Use the RoyaleAPI proxy if your server has a dynamic IP. For the
+                        proxy, create a Clash Royale key whitelisting
+                        <strong> 45.79.218.79</strong>.
+                    </p>
+                    <label className={styles.checkbox}>
+                        <input
+                            type="checkbox"
+                            checked={useProxy}
+                            onChange={toggleProxy}
+                        />
+                        Use RoyaleAPI proxy
+                    </label>
+                    <input
+                        type="text"
+                        className={styles.input}
+                        value={baseUrl}
+                        onChange={(e) => {
+                            setUseProxy(e.target.value === PROXY_BASE);
+                            setBaseUrl(e.target.value);
+                        }}
+                        placeholder="https://api.clashroyale.com/v1"
                     />
 
                     <div className={styles.actions}>
@@ -101,8 +135,8 @@ export default function Settings() {
                     </p>
                     <p className={styles.description}>
                         If you see an access-denied error, the API key does not allow access
-                        from the current IP address. Make sure the token matches the IP
-                        whitelist in the Clash Royale developer portal.
+                        from the request IP address. You can use the RoyaleAPI proxy and
+                        whitelist the proxy IP (45.79.218.79) instead.
                     </p>
                 </div>
             </div>

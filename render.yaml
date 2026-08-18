@@ -12,5 +12,7 @@ services:
         value: 22
       - key: CLASH_ROYALE_TOKEN
         sync: false
+      - key: CLASH_ROYALE_BASE_URL
+        value: https://proxy.royaleapi.dev/v1
       - key: CLAN_TAG
         value: "%23RY8LY"
