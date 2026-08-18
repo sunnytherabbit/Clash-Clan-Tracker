@@ -1,7 +1,8 @@
 # Clash Clan Tracker
 
 Python Flask backend and Vite + React frontend that fetches the Clash Royale
-`currentriverrace` endpoint for clan `#RY8LY`.
+`currentriverrace` endpoint for clan `#RY8LY`, plus clan info, clan members and
+individual player profiles.
 
 ## Running locally
 
@@ -47,6 +48,16 @@ change. If the password is not set on the server, the configuration cannot be
 updated through the UI. This prevents visitors from changing your API key, clan
 or endpoint.
 
+## Features
+
+- **Overview** — current river race, top participants, race leaderboard.
+- **Participants** — full river race participant table.
+- **Race** — full race leaderboard.
+- **Clan** — clan details and member list. Click a member to open their profile.
+- **Player** — player profile, upcoming chests and battle log. Accessed by
+  clicking any player name or visiting `/player/<tag>`.
+- **Settings** — update API key, clan tag and API endpoint (password-protected).
+
 ## Deploying online (Render — free)
 
 A `render.yaml` blueprint is included at the repository root. It builds the
@@ -68,8 +79,13 @@ service on a free Render web instance.
 ## Verification
 
 - Backend health: `curl http://127.0.0.1:5000/api/health`
-- Backend river race: `curl http://127.0.0.1:5000/api/riverrace`
-- Update config: `curl -X POST -H "Content-Type: application/json" -d '{"password":"dev","token":"...","clan_tag":"#RY8LY","base_url":"https://proxy.royaleapi.dev/v1"}' http://127.0.0.1:5000/api/config`
+- River race: `curl http://127.0.0.1:5000/api/riverrace`
+- Clan: `curl http://127.0.0.1:5000/api/clan`
+- Clan members: `curl http://127.0.0.1:5000/api/clan/members`
+- Player: `curl http://127.0.0.1:5000/api/player/%23RY8LY`
+- Player chests: `curl http://127.0.0.1:5000/api/player/%23RY8LY/chests`
+- Player battles: `curl http://127.0.0.1:5000/api/player/%23RY8LY/battles`
+- Update config: `curl -X POST -H "Content-Type: application/json" -d '{"password":"dev","token":"...","clan_tag":"#RY8LY"}' http://127.0.0.1:5000/api/config`
 - Frontend lint: `cd frontend && npm run lint`
 - Frontend build: `cd frontend && npm run build`
 - Production preview: `cd frontend && npm run preview`

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRiverRace } from "../hooks/useRiverRace";
+import { PlayerLink } from "../components/PlayerLink";
 import { formatNumber } from "../lib/format";
 import styles from "../styles/participants.module.css";
 
@@ -70,7 +71,9 @@ export default function Participants() {
                         {participants.map((p, i) => (
                             <tr key={p.tag}>
                                 <td>{i + 1}</td>
-                                <td className={styles.name}>{p.name}</td>
+                                <td className={styles.name}>
+                                    <PlayerLink tag={p.tag} name={p.name} />
+                                </td>
                                 <td className={styles.tag}>{p.tag}</td>
                                 <td className={styles.num}>{formatNumber(p.fame)}</td>
                                 <td className={styles.num}>{formatNumber(p.repairPoints)}</td>

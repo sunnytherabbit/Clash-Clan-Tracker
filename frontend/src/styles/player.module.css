@@ -1,0 +1,211 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.heroInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.playerName {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 800;
+}
+
+.tag {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.95rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.meta span {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+}
+
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab {
+    padding: 0.75rem 1.25rem;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-weight: 700;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.tab:hover {
+    color: var(--text-color);
+}
+
+.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+}
+
+.statCard {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.statValue {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-color);
+}
+
+.statLabel {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+}
+
+.list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.listItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--surface-2);
+    border-radius: 10px;
+    color: var(--text-color);
+}
+
+.rank {
+    display: inline-grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 0.85rem;
+    background: var(--primary);
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.listName {
+    font-weight: 700;
+}
+
+.battleItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.85rem;
+    background: var(--surface-2);
+    border-radius: 10px;
+    color: var(--text-color);
+}
+
+.battleHeader {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.victory {
+    font-weight: 800;
+    color: var(--success);
+}
+
+.defeat {
+    font-weight: 800;
+    color: var(--error);
+}
+
+.battleTime,
+.battleMode {
+    color: var(--text-secondary);
+}
+
+.battleScore {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.crowns {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.empty {
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 2rem;
+    margin: 0;
+}
+
+.error {
+    background: var(--error-bg);
+    color: var(--error);
+    padding: 1rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    border: 1px solid var(--error);
+}

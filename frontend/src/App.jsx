@@ -6,6 +6,8 @@ import { RiverRaceProvider } from './context/RiverRaceProvider'
 import Overview from './routes/overview'
 import Participants from './routes/participants'
 import Clans from './routes/clans'
+import Clan from './routes/clan'
+import Player from './routes/player'
 import Settings from './routes/settings'
 
 function App() {
@@ -17,6 +19,8 @@ function App() {
           <Route path="/overview" element={<Overview />} />
           <Route path="/participants" element={<Participants />} />
           <Route path="/clans" element={<Clans />} />
+          <Route path="/clan" element={<Clan />} />
+          <Route path="/player/:tag" element={<Player />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>

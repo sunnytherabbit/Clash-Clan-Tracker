@@ -1,4 +1,5 @@
 import { useRiverRace } from "../hooks/useRiverRace";
+import { PlayerLink } from "../components/PlayerLink";
 import { formatNumber } from "../lib/format";
 import styles from "../styles/overview.module.css";
 
@@ -77,7 +78,9 @@ export default function Overview() {
                                     <li key={p.tag} className={styles.listItem}>
                                         <span className={styles.rank}>#{i + 1}</span>
                                         <div className={styles.listInfo}>
-                                            <span className={styles.listName}>{p.name}</span>
+                                            <span className={styles.listName}>
+                                                <PlayerLink tag={p.tag} name={p.name} />
+                                            </span>
                                             <span className={styles.listTag}>{p.tag}</span>
                                         </div>
                                         <span className={styles.listScore}>{formatNumber(p.fame)}</span>

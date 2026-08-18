@@ -4,6 +4,8 @@ import { api_fetch } from "../lib/api";
 
 export function RiverRaceProvider({ children }) {
     const [data, setData] = useState(null);
+    const [clanInfo, setClanInfo] = useState(null);
+    const [clanMembers, setClanMembers] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [lastUpdated, setLastUpdated] = useState(null);
@@ -12,14 +14,57 @@ export function RiverRaceProvider({ children }) {
         setLoading(true);
         setError("");
         try {
-            const response = await api_fetch("/api/riverrace");
-            setData(response);
-            setLastUpdated(new Date());
+            const [riverRace, clan, members] = await Promise.allSettled([
+                api_fetch("/api/riverrace"),
+                api_fetch("/api/clan"),
+                api_fetch("/api/clan/members"),
+            ]);
+
+            const errors = [];
+            if (riverRace.status === "fulfilled") {
+                setData(riverRace.value);
+            } else {
+                errors.push(riverRace.reason?.message || riverRace.reason);
+            }
+
+            if (clan.status === "fulfilled") {
+                setClanInfo(clan.value);
+            } else {
+                errors.push(clan.reason?.message || clan.reason);
+            }
+
+            if (members.status === "fulfilled") {
+                setClanMembers(members.value?.items || members.value);
+            } else {
+                errors.push(members.reason?.message || members.reason);
+            }
+
+            if (errors.length > 0) {
+                const unique = [...new Set(errors)];
+                setError(unique.join("; "));
+            } else {
+                setLastUpdated(new Date());
+            }
         } catch (err) {
             setError(err.message);
         } finally {
             setLoading(false);
         }
+    }, []);
+
+    const fetchPlayer = useCallback((tag) => {
+        const decoded = decodeURIComponent(tag);
+        return api_fetch(`/api/player/${encodeURIComponent(decoded)}`);
+    }, []);
+
+    const fetchPlayerChests = useCallback((tag) => {
+        const decoded = decodeURIComponent(tag);
+        return api_fetch(`/api/player/${encodeURIComponent(decoded)}/chests`);
+    }, []);
+
+    const fetchPlayerBattles = useCallback((tag) => {
+        const decoded = decodeURIComponent(tag);
+        return api_fetch(`/api/player/${encodeURIComponent(decoded)}/battles`);
     }, []);
 
     useEffect(() => {
@@ -28,7 +73,20 @@ export function RiverRaceProvider({ children }) {
     }, [refresh]);
 
     return (
-        <RiverRaceContext.Provider value={{ data, loading, error, lastUpdated, refresh }}>
+        <RiverRaceContext.Provider
+            value={{
+                data,
+                clanInfo,
+                clanMembers,
+                loading,
+                error,
+                lastUpdated,
+                refresh,
+                fetchPlayer,
+                fetchPlayerChests,
+                fetchPlayerBattles,
+            }}
+        >
             {children}
         </RiverRaceContext.Provider>
     );
