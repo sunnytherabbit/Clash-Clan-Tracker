@@ -19,11 +19,11 @@ const columns = [
     { key: "tag", label: "Tag", text: true, defaultDir: "asc" },
     { key: "roleRank", label: "Role", numeric: true, defaultDir: "asc" },
     { key: "expLevel", label: "Exp", numeric: true, defaultDir: "desc" },
+    { key: "leagueName", label: "League", text: true, defaultDir: "asc" },
     { key: "elo", label: "ELO", numeric: true, defaultDir: "desc" },
     { key: "donations", label: "Donations", numeric: true, defaultDir: "desc" },
     { key: "donationsReceived", label: "Received", numeric: true, defaultDir: "desc" },
     { key: "lastSeen", label: "Last Seen", date: true, defaultDir: "desc" },
-    { key: "leagueName", label: "League", text: true, defaultDir: "asc" },
 ];
 
 function compare(a, b, col) {
@@ -161,22 +161,6 @@ function MemberRow({ member }) {
             <td className={styles.tag}>{member.tag}</td>
             <td>{member.role}</td>
             <td className={styles.num}>{formatNumber(member.expLevel)}</td>
-            <td className={styles.num}>
-                <span className={member.hasElo ? styles.elo : styles.trophies}>
-                    {formatNumber(member.displayElo)}
-                </span>
-                {!member.hasElo && (
-                    <span className={styles.fallbackTrophies} title="Trophy Road">
-                        TR
-                    </span>
-                )}
-            </td>
-            <td className={styles.num}>{formatNumber(member.donations)}</td>
-            <td className={styles.num}>{formatNumber(member.donationsReceived)}</td>
-            <td className={`${styles.num} ${styles.lastSeen}`}>
-                <span className={styles.ago}>{lastSeen.ago}</span>
-                <span className={styles.fullDate}>{lastSeen.full}</span>
-            </td>
             <td className={styles.leagueCell}>
                 {member.leagueNumber ? (
                     <span className={styles.league}>
@@ -192,6 +176,22 @@ function MemberRow({ member }) {
                 ) : (
                     "—"
                 )}
+            </td>
+            <td className={styles.num}>
+                <span className={member.hasElo ? styles.elo : styles.trophies}>
+                    {formatNumber(member.displayElo)}
+                </span>
+                {!member.hasElo && (
+                    <span className={styles.fallbackTrophies} title="Trophy Road">
+                        TR
+                    </span>
+                )}
+            </td>
+            <td className={styles.num}>{formatNumber(member.donations)}</td>
+            <td className={styles.num}>{formatNumber(member.donationsReceived)}</td>
+            <td className={`${styles.num} ${styles.lastSeen}`}>
+                <span className={styles.ago}>{lastSeen.ago}</span>
+                <span className={styles.fullDate}>{lastSeen.full}</span>
             </td>
         </tr>
     );

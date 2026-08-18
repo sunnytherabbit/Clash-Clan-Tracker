@@ -157,11 +157,12 @@
 
 .elo {
     font-weight: 700;
-    color: var(--primary);
+    color: #a855f7;
 }
 
 .trophies {
-    color: var(--text-color);
+    font-weight: 700;
+    color: #eab308;
 }
 
 .fallbackTrophies {
