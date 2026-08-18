@@ -93,11 +93,16 @@ export default function Members() {
                                 >
                                     <span className={styles.headerContent}>
                                         {c.label}
-                                        {sortConfig.key === c.key && (
-                                            <span className={styles.arrow}>
-                                                {sortConfig.dir === "asc" ? " ▲" : " ▼"}
-                                            </span>
-                                        )}
+                                        <span
+                                            className={styles.arrow}
+                                            aria-hidden="true"
+                                        >
+                                            {sortConfig.key === c.key
+                                                ? sortConfig.dir === "asc"
+                                                    ? "▲"
+                                                    : "▼"
+                                                : ""}
+                                        </span>
                                     </span>
                                 </th>
                             ))}

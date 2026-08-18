@@ -98,6 +98,9 @@
 }
 
 .arrow {
+    display: inline-block;
+    width: 1.1em;
+    text-align: center;
     color: var(--primary);
     font-size: 0.7rem;
 }
