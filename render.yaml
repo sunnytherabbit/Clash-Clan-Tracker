@@ -1,15 +1,11 @@
 services:
   - type: web
-    name: clash-clan-tracker
+    name: clash-clan-tracker-api
     runtime: python
     plan: free
-    buildCommand: |
-      pip install -r requirements.txt
-      cd frontend && npm install && npm run build
+    buildCommand: pip install -r requirements.txt
     startCommand: cd flask-server && gunicorn --bind 0.0.0.0:$PORT wsgi:application
     envVars:
-      - key: NODE_VERSION
-        value: 22
       - key: CLASH_ROYALE_TOKEN
         sync: false
       - key: CLASH_ROYALE_BASE_URL
