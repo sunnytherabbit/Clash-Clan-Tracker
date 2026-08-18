@@ -78,6 +78,28 @@
     background: var(--surface-2);
     position: sticky;
     top: 0;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.1s ease;
+}
+
+.table th:hover {
+    background: var(--surface);
+}
+
+.header {
+    white-space: nowrap;
+}
+
+.headerContent {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.arrow {
+    color: var(--primary);
+    font-size: 0.7rem;
 }
 
 .table tr:last-child td {
