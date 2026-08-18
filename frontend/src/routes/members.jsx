@@ -181,7 +181,14 @@ function MemberRow({ member }) {
                 <span className={member.hasElo ? styles.elo : styles.trophies}>
                     {formatNumber(member.displayElo)}
                 </span>
-                {!member.hasElo && (
+                {member.hasElo ? (
+                    <img
+                        src="/medal.webp"
+                        alt="ELO"
+                        className={styles.medalIcon}
+                        title="Path of Legend ELO"
+                    />
+                ) : (
                     <img
                         src="/trophy.webp"
                         alt="Trophy Road"
