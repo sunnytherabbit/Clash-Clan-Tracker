@@ -19,7 +19,7 @@ const columns = [
     { key: "tag", label: "Tag", text: true, defaultDir: "asc" },
     { key: "roleRank", label: "Role", numeric: true, defaultDir: "asc" },
     { key: "expLevel", label: "Exp", numeric: true, defaultDir: "desc" },
-    { key: "leagueName", label: "League", text: true, defaultDir: "asc" },
+    { key: "leagueNumber", label: "League", numeric: true, defaultDir: "desc" },
     { key: "elo", label: "ELO", numeric: true, defaultDir: "desc" },
     { key: "donations", label: "Donations", numeric: true, defaultDir: "desc" },
     { key: "donationsReceived", label: "Received", numeric: true, defaultDir: "desc" },
