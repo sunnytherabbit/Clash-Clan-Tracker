@@ -5,6 +5,11 @@
     vertical-align: middle;
 }
 
+.image {
+    object-fit: contain;
+    border-radius: 8px;
+}
+
 .name {
     font-size: 0.8rem;
     font-weight: 700;

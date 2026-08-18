@@ -1,8 +1,26 @@
+import { useAssets, useAssetImage } from "../lib/assets";
 import styles from "./LeagueBadge.module.css";
 
 export function LeagueBadge({ leagueNumber, name, size = "2.5rem", showName = false }) {
-    if (!leagueNumber) {
-        return <span className={styles.placeholder}>-</span>;
+    const assets = useAssets();
+    const src = useAssetImage("leagues", leagueNumber, assets);
+
+    if (src) {
+        return (
+            <div
+                className={styles.badge}
+                style={{ width: size, height: size }}
+                title={name || `League ${leagueNumber}`}
+            >
+                <img
+                    src={src}
+                    alt={name || `League ${leagueNumber}`}
+                    className={styles.image}
+                    style={{ width: size, height: size }}
+                />
+                {showName && name && <span className={styles.name}>{name}</span>}
+            </div>
+        );
     }
 
     const hue = ((leagueNumber - 1) * 35) % 360;

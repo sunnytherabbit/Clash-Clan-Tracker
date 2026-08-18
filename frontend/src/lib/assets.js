@@ -5,12 +5,14 @@ const cache = {
     badges: null,
     arenas: null,
     cards: null,
+    leagues: null,
 };
 
 const inFlight = {
     badges: null,
     arenas: null,
     cards: null,
+    leagues: null,
 };
 
 async function loadAssetMap(type) {
@@ -34,6 +36,7 @@ export function useAssets() {
         badges: {},
         arenas: {},
         cards: {},
+        leagues: {},
         loading: true,
         error: "",
     });
@@ -44,15 +47,17 @@ export function useAssets() {
             loadAssetMap("badges"),
             loadAssetMap("arenas"),
             loadAssetMap("cards"),
-        ]).then(([badgesRes, arenasRes, cardsRes]) => {
+            loadAssetMap("leagues"),
+        ]).then(([badgesRes, arenasRes, cardsRes, leaguesRes]) => {
             if (cancelled) return;
-            const errors = [badgesRes, arenasRes, cardsRes]
+            const errors = [badgesRes, arenasRes, cardsRes, leaguesRes]
                 .filter((r) => r.status === "rejected")
                 .map((r) => r.reason?.message || r.reason);
             setState({
                 badges: badgesRes.status === "fulfilled" ? badgesRes.value : {},
                 arenas: arenasRes.status === "fulfilled" ? arenasRes.value : {},
                 cards: cardsRes.status === "fulfilled" ? cardsRes.value : {},
+                leagues: leaguesRes.status === "fulfilled" ? leaguesRes.value : {},
                 loading: false,
                 error: errors.length ? errors.join("; ") : "",
             });

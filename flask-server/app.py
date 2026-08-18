@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import threading
 from concurrent.futures import ThreadPoolExecutor
@@ -9,6 +10,7 @@ import config
 CACHE_TTL = 60
 ASSET_DATA_BASE = "https://royaleapi.github.io/cr-api-data/json"
 ASSET_IMG_BASE = "https://royaleapi.github.io/cr-api-assets"
+FANDOM_API_URL = "https://clashroyale.fandom.com/api.php"
 
 
 class _Cache:
@@ -172,6 +174,35 @@ def _build_cards_map():
     return mapping
 
 
+def _build_league_map():
+    cached = _cache.get("assets:leagues")
+    if cached is not None:
+        return cached
+
+    params = {
+        "action": "query",
+        "list": "allimages",
+        "aiprefix": "League",
+        "ailimit": 50,
+        "format": "json",
+    }
+    headers = {"User-Agent": "Mozilla/5.0 ClashClanTracker/1.0"}
+    response = requests.get(FANDOM_API_URL, params=params, headers=headers, timeout=15)
+    response.raise_for_status()
+    data = response.json()
+
+    mapping = {}
+    pattern = re.compile(r"^League(\d+)\.png$", re.IGNORECASE)
+    for img in data.get("query", {}).get("allimages", []):
+        name = img.get("name", "")
+        match = pattern.match(name)
+        if match:
+            mapping[match.group(1)] = img.get("url", "")
+
+    _cache.set("assets:leagues", mapping, ttl=86400)
+    return mapping
+
+
 def fetch_riverrace():
     """Fetch the current river race, with a short in-memory cache."""
     return _cr_get(
@@ -278,6 +309,14 @@ def assets_arenas():
 def assets_cards():
     try:
         return jsonify(_build_cards_map()), 200
+    except Exception as e:
+        return jsonify({"error": "Asset error", "message": str(e)}), 502
+
+
+@config.app.route("/api/assets/leagues", methods=["GET"])
+def assets_leagues():
+    try:
+        return jsonify(_build_league_map()), 200
     except Exception as e:
         return jsonify({"error": "Asset error", "message": str(e)}), 502
 
