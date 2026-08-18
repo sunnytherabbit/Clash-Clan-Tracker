@@ -6,11 +6,18 @@ import { LeagueBadge } from "../components/LeagueBadge";
 import { formatNumber, formatTimeAgo } from "../lib/format";
 import styles from "../styles/members.module.css";
 
+const roleRanks = {
+    leader: 1,
+    coLeader: 2,
+    elder: 3,
+    member: 4,
+};
+
 const columns = [
     { key: "clanRank", label: "Rank", numeric: true, defaultDir: "asc" },
     { key: "name", label: "Name", text: true, defaultDir: "asc" },
     { key: "tag", label: "Tag", text: true, defaultDir: "asc" },
-    { key: "role", label: "Role", text: true, defaultDir: "asc" },
+    { key: "roleRank", label: "Role", numeric: true, defaultDir: "asc" },
     { key: "expLevel", label: "Exp", numeric: true, defaultDir: "desc" },
     { key: "elo", label: "ELO", numeric: true, defaultDir: "desc" },
     { key: "donations", label: "Donations", numeric: true, defaultDir: "desc" },
@@ -42,12 +49,19 @@ export default function Members() {
     const enrichedMembers = useMemo(() => {
         return (clanMembers || []).map((m) => {
             const e = elos[m.tag] || {};
+            const hasElo = e.elo != null && e.elo > 0 && e.leagueNumber != null;
+            const rawElo = e.elo ?? 0;
+            const displayElo = hasElo ? rawElo : m.trophies;
+            const sortElo = hasElo ? rawElo : -1;
+
             return {
                 ...m,
-                elo: e.elo != null ? e.elo : m.trophies,
+                roleRank: roleRanks[m.role] ?? 99,
+                elo: sortElo,
+                displayElo,
+                hasElo,
                 leagueNumber: e.leagueNumber,
                 leagueName: e.leagueName || "",
-                hasElo: e.elo != null,
             };
         });
     }, [clanMembers, elos]);
@@ -91,7 +105,6 @@ export default function Members() {
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
                     />
-
                 </div>
             </div>
 
@@ -150,7 +163,7 @@ function MemberRow({ member }) {
             <td className={styles.num}>{formatNumber(member.expLevel)}</td>
             <td className={styles.num}>
                 <span className={member.hasElo ? styles.elo : styles.trophies}>
-                    {formatNumber(member.elo)}
+                    {formatNumber(member.displayElo)}
                 </span>
                 {!member.hasElo && (
                     <span className={styles.fallbackTrophies} title="Trophy Road">
@@ -172,7 +185,9 @@ function MemberRow({ member }) {
                             name={member.leagueName}
                             size="1.75rem"
                         />
-                        <span className={styles.leagueName}>{member.leagueName}</span>
+                        {member.leagueName && (
+                            <span className={styles.leagueName}>{member.leagueName}</span>
+                        )}
                     </span>
                 ) : (
                     "—"
