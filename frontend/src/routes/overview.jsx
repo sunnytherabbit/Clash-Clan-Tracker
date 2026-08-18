@@ -33,8 +33,8 @@ export default function Overview() {
     const stats = [
         { label: "Members", value: memberCount },
         { label: "Clan Score", value: clanInfo.clanScore },
-        { label: "Clan War Trophies", value: clanInfo.clanWarTrophies },
-        { label: "Donations / Week", value: clanInfo.donationsPerWeek },
+        { label: "Clan War Trophies", value: clanInfo.clanWarTrophies, icon: "/clan-war-trophy.webp" },
+        { label: "Donations / Week", value: clanInfo.donationsPerWeek, icon: "/donated.webp" },
         { label: "Required Trophies", value: clanInfo.requiredTrophies },
     ];
 
@@ -71,7 +71,12 @@ export default function Overview() {
             <div className={styles.stats}>
                 {stats.map((s) => (
                     <div key={s.label} className={styles.statCard}>
-                        <span className={styles.statValue}>{formatNumber(s.value)}</span>
+                        <span className={styles.statValue}>
+                            {formatNumber(s.value)}
+                            {s.icon && (
+                                <img src={s.icon} alt={s.label} className={styles.statIcon} />
+                            )}
+                        </span>
                         <span className={styles.statLabel}>{s.label}</span>
                     </div>
                 ))}
