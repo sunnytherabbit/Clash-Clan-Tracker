@@ -3,7 +3,6 @@ import { RiverRaceContext } from "./RiverRaceContext";
 import { api_fetch } from "../lib/api";
 
 export function RiverRaceProvider({ children }) {
-    const [data, setData] = useState(null);
     const [clanInfo, setClanInfo] = useState(null);
     const [clanMembers, setClanMembers] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -14,19 +13,12 @@ export function RiverRaceProvider({ children }) {
         setLoading(true);
         setError("");
         try {
-            const [riverRace, clan, members] = await Promise.allSettled([
-                api_fetch("/api/riverrace"),
+            const [clan, members] = await Promise.allSettled([
                 api_fetch("/api/clan"),
                 api_fetch("/api/clan/members"),
             ]);
 
             const errors = [];
-            if (riverRace.status === "fulfilled") {
-                setData(riverRace.value);
-            } else {
-                errors.push(riverRace.reason?.message || riverRace.reason);
-            }
-
             if (clan.status === "fulfilled") {
                 setClanInfo(clan.value);
             } else {
@@ -57,11 +49,6 @@ export function RiverRaceProvider({ children }) {
         return api_fetch(`/api/player/${encodeURIComponent(decoded)}`);
     }, []);
 
-    const fetchPlayerChests = useCallback((tag) => {
-        const decoded = decodeURIComponent(tag);
-        return api_fetch(`/api/player/${encodeURIComponent(decoded)}/chests`);
-    }, []);
-
     const fetchPlayerBattles = useCallback((tag) => {
         const decoded = decodeURIComponent(tag);
         return api_fetch(`/api/player/${encodeURIComponent(decoded)}/battles`);
@@ -75,7 +62,6 @@ export function RiverRaceProvider({ children }) {
     return (
         <RiverRaceContext.Provider
             value={{
-                data,
                 clanInfo,
                 clanMembers,
                 loading,
@@ -83,7 +69,6 @@ export function RiverRaceProvider({ children }) {
                 lastUpdated,
                 refresh,
                 fetchPlayer,
-                fetchPlayerChests,
                 fetchPlayerBattles,
             }}
         >

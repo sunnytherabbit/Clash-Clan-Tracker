@@ -6,17 +6,15 @@ import styles from "../styles/player.module.css";
 
 const tabs = [
     { key: "profile", label: "Profile" },
-    { key: "chests", label: "Upcoming Chests" },
     { key: "battles", label: "Battle Log" },
 ];
 
 export default function Player() {
     const rawTag = useParams().tag || "";
     const tag = decodeURIComponent(rawTag);
-    const { fetchPlayer, fetchPlayerChests, fetchPlayerBattles } = useRiverRace();
+    const { fetchPlayer, fetchPlayerBattles } = useRiverRace();
 
     const [player, setPlayer] = useState(null);
-    const [chests, setChests] = useState(null);
     const [battles, setBattles] = useState(null);
     const [activeTab, setActiveTab] = useState("profile");
     const [loading, setLoading] = useState(true);
@@ -28,19 +26,17 @@ export default function Player() {
             setLoading(true);
             setError("");
             try {
-                const [p, c, b] = await Promise.allSettled([
+                const [p, b] = await Promise.allSettled([
                     fetchPlayer(tag),
-                    fetchPlayerChests(tag),
                     fetchPlayerBattles(tag),
                 ]);
 
                 if (cancelled) return;
 
                 if (p.status === "fulfilled") setPlayer(p.value);
-                if (c.status === "fulfilled") setChests(c.value?.items || c.value);
                 if (b.status === "fulfilled") setBattles(b.value);
 
-                const errors = [p, c, b]
+                const errors = [p, b]
                     .filter((r) => r.status === "rejected")
                     .map((r) => r.reason?.message || r.reason);
                 if (errors.length > 0) {
@@ -55,7 +51,7 @@ export default function Player() {
         return () => {
             cancelled = true;
         };
-    }, [tag, fetchPlayer, fetchPlayerChests, fetchPlayerBattles]);
+    }, [tag, fetchPlayer, fetchPlayerBattles]);
 
     if (loading) return <p className={styles.empty}>Loading player...</p>;
     if (error) return <div className={styles.error}>{error}</div>;
@@ -116,23 +112,6 @@ export default function Player() {
                             <span className={styles.statLabel}>{s.label}</span>
                         </div>
                     ))}
-                </div>
-            )}
-
-            {activeTab === "chests" && (
-                <div className={styles.card}>
-                    {chests && chests.length > 0 ? (
-                        <ul className={styles.list}>
-                            {chests.map((chest, i) => (
-                                <li key={i} className={styles.listItem}>
-                                    <span className={styles.rank}>#{i + 1}</span>
-                                    <span className={styles.listName}>{chest.name}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p className={styles.empty}>No upcoming chests.</p>
-                    )}
                 </div>
             )}
 

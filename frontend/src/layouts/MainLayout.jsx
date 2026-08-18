@@ -5,9 +5,7 @@ import styles from "../styles/mainLayout.module.css";
 
 const tabs = [
     { to: "/overview", label: "Overview" },
-    { to: "/participants", label: "Participants" },
-    { to: "/clans", label: "Race" },
-    { to: "/clan", label: "Clan" },
+    { to: "/members", label: "Members" },
     { to: "/settings", label: "Settings" },
 ];
 

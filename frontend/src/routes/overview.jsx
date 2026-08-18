@@ -3,56 +3,54 @@ import { PlayerLink } from "../components/PlayerLink";
 import { formatNumber } from "../lib/format";
 import styles from "../styles/overview.module.css";
 
-const sortByFame = (a, b) => b.fame - a.fame || b.repairPoints - a.repairPoints;
-const sortByScore = (a, b) => b.clanScore - a.clanScore;
+const sortByTrophies = (a, b) => (b.trophies || 0) - (a.trophies || 0);
+const sortByDonations = (a, b) => (b.donations || 0) - (a.donations || 0);
 
 const Empty = () => (
     <div className={styles.empty}>
-        <p>No data available. Open the Settings tab to check the API key, then hit Refresh.</p>
+        <p>No clan data available. Open the Settings tab to check the API key, then hit Refresh.</p>
     </div>
 );
 
 const Loading = () => (
     <div className={styles.empty}>
-        <p>Loading river race data...</p>
+        <p>Loading clan data...</p>
     </div>
 );
 
 export default function Overview() {
-    const { data, loading, error } = useRiverRace();
+    const { clanInfo, clanMembers, loading, error } = useRiverRace();
 
-    if (loading && !data) return <Loading />;
+    if (loading && !clanInfo && !clanMembers) return <Loading />;
     if (error) return <div className={styles.error}>{error}</div>;
-    if (!data) return <Empty />;
+    if (!clanInfo) return <Empty />;
 
-    const clan = data.clan;
-    const participants = (clan?.participants || []).slice().sort(sortByFame);
-    const clans = (data.clans || []).slice().sort(sortByScore);
-    const ownRank = clans.findIndex((c) => c.tag === clan?.tag) + 1;
-
+    const members = (clanMembers || []).slice();
     const stats = [
-        { label: "Clan Score", value: clan?.clanScore },
-        { label: "Fame", value: clan?.fame },
-        { label: "Repair Points", value: clan?.repairPoints },
-        { label: "Period Points", value: clan?.periodPoints },
-        { label: "Participants", value: participants?.length },
+        { label: "Members", value: clanInfo.memberCount },
+        { label: "Clan Score", value: clanInfo.clanScore },
+        { label: "Clan War Trophies", value: clanInfo.clanWarTrophies },
+        { label: "Donations / Week", value: clanInfo.donationsPerWeek },
+        { label: "Required Trophies", value: clanInfo.requiredTrophies },
     ];
 
-    const topParticipants = participants.slice(0, 5);
-    const topClans = clans.slice(0, 5);
+    const topTrophies = members.slice().sort(sortByTrophies).slice(0, 5);
+    const topDonations = members.slice().sort(sortByDonations).slice(0, 5);
 
     return (
         <div className={styles.container}>
             <div className={styles.hero}>
                 <div className={styles.heroInfo}>
-                    <span className={styles.state}>{data.state}</span>
-                    <h2 className={styles.clanName}>{clan?.name}</h2>
-                    <p className={styles.tag}>{clan?.tag}</p>
+                    <span className={styles.state}>{clanInfo.type || "Clan"}</span>
+                    <h2 className={styles.clanName}>{clanInfo.name}</h2>
+                    <p className={styles.tag}>{clanInfo.tag}</p>
+                    {clanInfo.description && (
+                        <p className={styles.description}>{clanInfo.description}</p>
+                    )}
                     <div className={styles.meta}>
-                        <span>Period {data.periodIndex}</span>
-                        <span>Section {data.sectionIndex}</span>
-                        <span>{data.periodType}</span>
-                        {ownRank > 0 && <span>Rank #{ownRank}</span>}
+                        <span>Location: {clanInfo.location?.name || "—"}</span>
+                        <span>Members: {clanInfo.memberCount}</span>
+                        <span>Required Trophies: {formatNumber(clanInfo.requiredTrophies)}</span>
                     </div>
                 </div>
             </div>
@@ -68,22 +66,24 @@ export default function Overview() {
 
             <div className={styles.columns}>
                 <div className={styles.column}>
-                    <h3 className={styles.columnTitle}>Top Participants</h3>
+                    <h3 className={styles.columnTitle}>Top by Trophies</h3>
                     <div className={styles.card}>
-                        {topParticipants.length === 0 ? (
-                            <p className={styles.empty}>No participants yet.</p>
+                        {topTrophies.length === 0 ? (
+                            <p className={styles.empty}>No members yet.</p>
                         ) : (
                             <ul className={styles.list}>
-                                {topParticipants.map((p, i) => (
-                                    <li key={p.tag} className={styles.listItem}>
+                                {topTrophies.map((m, i) => (
+                                    <li key={m.tag} className={styles.listItem}>
                                         <span className={styles.rank}>#{i + 1}</span>
                                         <div className={styles.listInfo}>
                                             <span className={styles.listName}>
-                                                <PlayerLink tag={p.tag} name={p.name} />
+                                                <PlayerLink tag={m.tag} name={m.name} />
                                             </span>
-                                            <span className={styles.listTag}>{p.tag}</span>
+                                            <span className={styles.listTag}>{m.tag}</span>
                                         </div>
-                                        <span className={styles.listScore}>{formatNumber(p.fame)}</span>
+                                        <span className={styles.listScore}>
+                                            {formatNumber(m.trophies)}
+                                        </span>
                                     </li>
                                 ))}
                             </ul>
@@ -92,26 +92,23 @@ export default function Overview() {
                 </div>
 
                 <div className={styles.column}>
-                    <h3 className={styles.columnTitle}>Race Leaderboard</h3>
+                    <h3 className={styles.columnTitle}>Top by Donations</h3>
                     <div className={styles.card}>
-                        {topClans.length === 0 ? (
-                            <p className={styles.empty}>No clans yet.</p>
+                        {topDonations.length === 0 ? (
+                            <p className={styles.empty}>No members yet.</p>
                         ) : (
                             <ul className={styles.list}>
-                                {topClans.map((c, i) => (
-                                    <li
-                                        key={c.tag}
-                                        className={`${styles.listItem} ${
-                                            c.tag === clan?.tag ? styles.ownClan : ""
-                                        }`}
-                                    >
+                                {topDonations.map((m, i) => (
+                                    <li key={m.tag} className={styles.listItem}>
                                         <span className={styles.rank}>#{i + 1}</span>
                                         <div className={styles.listInfo}>
-                                            <span className={styles.listName}>{c.name}</span>
-                                            <span className={styles.listTag}>{c.tag}</span>
+                                            <span className={styles.listName}>
+                                                <PlayerLink tag={m.tag} name={m.name} />
+                                            </span>
+                                            <span className={styles.listTag}>{m.tag}</span>
                                         </div>
                                         <span className={styles.listScore}>
-                                            {formatNumber(c.clanScore)}
+                                            {formatNumber(m.donations)}
                                         </span>
                                     </li>
                                 ))}

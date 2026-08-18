@@ -144,15 +144,6 @@ def fetch_player(tag):
     )
 
 
-def fetch_player_chests(tag):
-    encoded = config._encode_tag(tag)
-    return _cr_get(
-        f"/players/{encoded}/upcomingchests",
-        cache_key=f"player:{encoded}:chests",
-        cache_ttl=600,
-    )
-
-
 def fetch_player_battles(tag):
     encoded = config._encode_tag(tag)
     return _cr_get(
@@ -240,21 +231,6 @@ def clan_members():
 def player(tag):
     try:
         data = fetch_player(tag)
-        return jsonify(data), 200
-    except requests.exceptions.HTTPError as e:
-        status = e.response.status_code
-        message = e.response.text or str(e)
-        return jsonify({"error": "Clash Royale API error", "message": message}), status
-    except RuntimeError as e:
-        return jsonify({"error": "Configuration error", "message": str(e)}), 500
-    except Exception as e:
-        return jsonify({"error": "Server error", "message": str(e)}), 500
-
-
-@config.app.route("/api/player/<string:tag>/chests", methods=["GET"])
-def player_chests(tag):
-    try:
-        data = fetch_player_chests(tag)
         return jsonify(data), 200
     except requests.exceptions.HTTPError as e:
         status = e.response.status_code
