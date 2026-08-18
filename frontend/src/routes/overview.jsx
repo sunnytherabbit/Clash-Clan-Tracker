@@ -35,7 +35,7 @@ export default function Overview() {
         { label: "Clan Score", value: clanInfo.clanScore },
         { label: "Clan War Trophies", value: clanInfo.clanWarTrophies, icon: "/clan-war-trophy.webp" },
         { label: "Donations / Week", value: clanInfo.donationsPerWeek, icon: "/donated.webp" },
-        { label: "Required Trophies", value: clanInfo.requiredTrophies },
+        { label: "Required Trophies", value: clanInfo.requiredTrophies, icon: "/trophy.webp" },
     ];
 
     const topTrophies = members.slice().sort(sortByTrophies);
@@ -91,7 +91,13 @@ export default function Overview() {
                         ) : (
                             <ul className={styles.list}>
                                 {topTrophies.map((m, i) => (
-                                    <TopMemberItem key={m.tag} member={m} rank={i + 1} score={m.trophies} />
+                                    <TopMemberItem
+                                        key={m.tag}
+                                        member={m}
+                                        rank={i + 1}
+                                        score={m.trophies}
+                                        icon="/trophy.webp"
+                                    />
                                 ))}
                             </ul>
                         )}
@@ -106,7 +112,13 @@ export default function Overview() {
                         ) : (
                             <ul className={styles.list}>
                                 {topDonations.map((m, i) => (
-                                    <TopMemberItem key={m.tag} member={m} rank={i + 1} score={m.donations} />
+                                    <TopMemberItem
+                                        key={m.tag}
+                                        member={m}
+                                        rank={i + 1}
+                                        score={m.donations}
+                                        icon="/donated.webp"
+                                    />
                                 ))}
                             </ul>
                         )}
@@ -117,7 +129,7 @@ export default function Overview() {
     );
 }
 
-function TopMemberItem({ member, rank, score }) {
+function TopMemberItem({ member, rank, score, icon }) {
     const goToPlayer = usePlayerNavigate(member.tag);
 
     return (
@@ -127,7 +139,10 @@ function TopMemberItem({ member, rank, score }) {
                 <span className={styles.listName}>{member.name}</span>
                 <span className={styles.listTag}>{member.tag}</span>
             </div>
-            <span className={styles.listScore}>{formatNumber(score)}</span>
+            <span className={styles.listScore}>
+                {formatNumber(score)}
+                {icon && <img src={icon} alt="" className={styles.listIcon} />}
+            </span>
         </li>
     );
 }

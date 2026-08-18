@@ -270,6 +270,16 @@
     font-weight: 800;
     color: var(--primary);
     font-variant-numeric: tabular-nums;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.listIcon {
+    width: 1.1rem;
+    height: 1.1rem;
+    object-fit: contain;
+    vertical-align: middle;
 }
 
 .empty {
