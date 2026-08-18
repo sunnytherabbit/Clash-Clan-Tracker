@@ -247,13 +247,69 @@ def fetch_clan_members():
     )
 
 
+def _build_league_name_map():
+    cached = _cache.get("assets:league_names")
+    if cached is not None:
+        return cached
+
+    base_paths = [
+        os.path.join(os.path.dirname(__file__), "..", "frontend", "public", "leagues"),
+        os.path.join(_dist_dir(), "leagues"),
+    ]
+
+    name_to_num = {
+        "Master I": "1",
+        "Master II": "2",
+        "Master III": "3",
+        "Champion": "4",
+        "Grand Champion": "5",
+        "Royal Champion": "6",
+        "Ultimate Champion": "7",
+    }
+
+    name_map = {}
+    seen = set()
+    numbered_pattern = re.compile(r"^League(\d+)\.(?:webp|png|jpg|jpeg)$", re.IGNORECASE)
+
+    for base in base_paths:
+        if not os.path.isdir(base):
+            continue
+        for filename in os.listdir(base):
+            if not os.path.isfile(os.path.join(base, filename)):
+                continue
+            if filename in seen:
+                continue
+            seen.add(filename)
+
+            stem = os.path.splitext(filename)[0]
+            number = None
+            number_match = numbered_pattern.match(filename)
+            if number_match:
+                number = number_match.group(1)
+            else:
+                number = name_to_num.get(stem)
+
+            if number and number not in name_map:
+                name_map[number] = stem
+
+    _cache.set("assets:league_names", name_map, ttl=86400)
+    return name_map
+
+
+def _league_name(number):
+    if number is None:
+        return None
+    name_map = _build_league_name_map()
+    return name_map.get(str(number), f"League {number}")
+
+
 def _extract_member_elo(player):
     pol = player.get("currentPathOfLegendSeasonResult") or {}
-    arena = pol.get("arena") or player.get("arena") or {}
+    league_number = pol.get("leagueNumber")
     return {
         "elo": pol.get("trophies"),
-        "leagueNumber": pol.get("leagueNumber"),
-        "leagueName": arena.get("name"),
+        "leagueNumber": league_number,
+        "leagueName": _league_name(league_number),
         "trophies": player.get("trophies"),
     }
 
