@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRiverRace } from "../hooks/useRiverRace";
 import { usePlayerNavigate } from "../hooks/usePlayerNavigate";
-import { formatNumber, formatDate } from "../lib/format";
+import { formatNumber, formatTimeAgo } from "../lib/format";
 import styles from "../styles/members.module.css";
 
 const sortOptions = {
@@ -84,6 +84,7 @@ export default function Members() {
 
 function MemberRow({ member }) {
     const goToPlayer = usePlayerNavigate(member.tag);
+    const lastSeen = formatTimeAgo(member.lastSeen);
 
     return (
         <tr onClick={goToPlayer} className={styles.clickableRow}>
@@ -95,7 +96,10 @@ function MemberRow({ member }) {
             <td className={styles.num}>{formatNumber(member.trophies)}</td>
             <td className={styles.num}>{formatNumber(member.donations)}</td>
             <td className={styles.num}>{formatNumber(member.donationsReceived)}</td>
-            <td className={styles.num}>{formatDate(member.lastSeen)}</td>
+            <td className={`${styles.num} ${styles.lastSeen}`}>
+                <span className={styles.ago}>{lastSeen.ago}</span>
+                <span className={styles.fullDate}>{lastSeen.full}</span>
+            </td>
         </tr>
     );
 }

@@ -26,3 +26,28 @@ export function formatDate(iso) {
     if (!d) return iso;
     return d.toLocaleString();
 }
+
+export function formatTimeAgo(iso) {
+    if (!iso) return { full: "—", ago: "—" };
+    const d = parseClashDate(iso);
+    if (!d) return { full: iso, ago: "—" };
+
+    const now = new Date();
+    const diffMs = Math.max(0, now.getTime() - d.getTime());
+    const totalMinutes = Math.floor(diffMs / 60000);
+    const totalHours = Math.floor(totalMinutes / 60);
+    const days = Math.floor(totalHours / 24);
+    const hours = totalHours % 24;
+    const minutes = totalMinutes % 60;
+
+    let ago;
+    if (days > 0) {
+        ago = `${days}d ${hours}h ago`;
+    } else if (hours > 0) {
+        ago = `${hours}h ${minutes}m ago`;
+    } else {
+        ago = `${minutes}m ago`;
+    }
+
+    return { full: d.toLocaleString(), ago };
+}
