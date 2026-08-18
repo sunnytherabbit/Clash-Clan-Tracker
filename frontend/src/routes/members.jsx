@@ -5,7 +5,7 @@ import { formatNumber, formatTimeAgo } from "../lib/format";
 import styles from "../styles/members.module.css";
 
 const columns = [
-    { key: "clanRank", label: "Rank", defaultDir: "asc" },
+    { key: "clanRank", label: "Rank", numeric: true, defaultDir: "asc" },
     { key: "name", label: "Name", text: true, defaultDir: "asc" },
     { key: "tag", label: "Tag", text: true, defaultDir: "asc" },
     { key: "role", label: "Role", text: true, defaultDir: "asc" },
