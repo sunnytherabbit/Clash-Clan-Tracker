@@ -1,15 +1,30 @@
+import { useState } from "react";
 import { useAssets, useAssetImage } from "../lib/assets";
 import styles from "./GameImage.module.css";
 
-function Img({ src, alt, className, size }) {
+function Img({ src, fallbackSrc, alt, className, size }) {
+    const [failed, setFailed] = useState(false);
+
+    const currentSrc = !failed ? src : (fallbackSrc || src);
+    const initial = (alt || "?")[0].toUpperCase();
+
+    if (!currentSrc) {
+        return (
+            <div className={styles.placeholder} style={{ width: size, height: size }}>
+                {initial}
+            </div>
+        );
+    }
+
     return (
         <img
-            src={src}
+            src={currentSrc}
             alt={alt}
             className={`${styles.image} ${className || ""}`}
             style={{ width: size, height: size }}
-            onError={(e) => {
-                e.target.style.display = "none";
+            onError={() => {
+                if (failed || !fallbackSrc) return;
+                setFailed(true);
             }}
         />
     );
@@ -48,14 +63,26 @@ export function ArenaImage({ id, name, size = "6rem", className }) {
 }
 
 export function CardImage({ card, size = "4rem", className }) {
+    const assets = useAssets();
+    const fallbackSrc = useAssetImage("cards", card?.id, assets);
     const evolved = card?.evolutionLevel > 0 && card?.iconUrls?.evolutionMedium;
     const src = evolved || card?.iconUrls?.medium || card?.iconUrls?.heroMedium;
-    if (!src) {
+
+    if (!src && !fallbackSrc) {
         return (
             <div className={styles.placeholder} style={{ width: size, height: size }}>
                 {card?.name ? card.name[0] : "C"}
             </div>
         );
     }
-    return <Img src={src} alt={card?.name || "card"} className={className} size={size} />;
+
+    return (
+        <Img
+            src={src}
+            fallbackSrc={fallbackSrc}
+            alt={card?.name || "card"}
+            className={className}
+            size={size}
+        />
+    );
 }

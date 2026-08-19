@@ -167,8 +167,8 @@ def _build_cards_map():
     data = _fetch_asset_json("cards")
     mapping = {}
     for card in data:
-        if "id" in card:
-            mapping[str(card["id"])] = card.get("iconUrls", {}).get("medium", "")
+        if "id" in card and "key" in card:
+            mapping[str(card["id"])] = f"{ASSET_IMG_BASE}/cards/{card['key']}.png"
 
     _cache.set("assets:cards", mapping, ttl=86400)
     return mapping
